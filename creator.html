@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Creator Dashboard</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Segoe UI',system-ui,sans-serif;background:#000;color:#fff;line-height:1.6}
+.container{max-width:1200px;margin:0 auto;padding:20px}
+h1{font-family:'Playfair Display',serif;font-size:2.2em;margin-bottom:30px;letter-spacing:2px}
+.login-section{max-width:400px;margin:50px auto;background:#111;border:1px solid #333;padding:30px}
+.login-section input{width:100%;padding:12px;background:#000;border:1px solid #444;color:#fff;margin-bottom:15px}
+.login-section button{width:100%;padding:12px;background:#fff;color:#000;border:none;font-weight:700;cursor:pointer}
+.stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:20px;margin-bottom:30px}
+.stat-card{background:#111;border:1px solid #333;padding:25px}
+.stat-value{font-size:2.5em;font-weight:700;margin:10px 0}
+.stat-label{color:#888;font-size:0.9em;text-transform:uppercase;letter-spacing:1px}
+.highlight{color:#4a9eff}
+.success{color:#0f0}
+.section{background:#111;border:1px solid #333;padding:25px;margin-bottom:20px}
+.section-title{font-size:1.3em;margin-bottom:20px;border-bottom:1px solid #333;padding-bottom:10px}
+table{width:100%;border-collapse:collapse}
+th,td{text-align:left;padding:12px;border-bottom:1px solid #222}
+th{background:#0a0a0a;font-weight:600;font-size:0.9em;color:#888}
+.status-pending{color:#ff9500}
+.status-verified{color:#0f0}
+.status-paid{color:#4a9eff}
+.code-box{background:#000;border:2px solid #4a9eff;padding:20px;text-align:center;margin:20px 0}
+.code-display{font-size:2em;font-weight:700;letter-spacing:3px;margin:10px 0}
+button.secondary{background:#222;color:#fff;border:1px solid #444;padding:10px 20px;cursor:pointer;margin-top:10px}
+button.secondary:hover{background:#333}
+.video-link{color:#4a9eff;text-decoration:none}
+.video-link:hover{text-decoration:underline}
+.hidden{display:none}
+.info-box{background:#1a1a1a;border-left:3px solid #4a9eff;padding:15px;margin:15px 0;font-size:0.9em}
+</style>
+</head>
+<body>
+<div class="container">
+<div id="loginSection" class="login-section">
+<h1 style="font-size:1.8em;text-align:center;margin-bottom:20px">CREATOR LOGIN</h1>
+<input type="text" id="loginPhone" placeholder="Phone Number">
+<input type="text" id="loginCode" placeholder="Creator Code">
+<button onclick="login()">LOGIN</button>
+</div>
+
+<div id="dashboard" class="hidden">
+<h1>CREATOR DASHBOARD</h1>
+<div id="creatorInfo"></div>
+
+<div class="code-box">
+<div style="font-size:0.9em;color:#888">YOUR CREATOR CODE</div>
+<div class="code-display" id="displayCode"></div>
+<button class="secondary" onclick="copyCode()">COPY CODE</button>
+</div>
+
+<div class="stats-grid">
+<div class="stat-card">
+<div class="stat-label">Total Views</div>
+<div class="stat-value highlight" id="totalViews">0</div>
+</div>
+<div class="stat-card">
+<div class="stat-label">Conversions</div>
+<div class="stat-value success" id="totalConversions">0</div>
+<div style="color:#666;font-size:0.8em;margin-top:5px">Conversion Rate: <span id="convRate">0%</span></div>
+</div>
+<div class="stat-card">
+<div class="stat-label">Total Earnings</div>
+<div class="stat-value success" id="totalEarnings">₹0</div>
+</div>
+<div class="stat-card">
+<div class="stat-label">Pending Payout</div>
+<div class="stat-value" id="pendingPayout">₹0</div>
+</div>
+</div>
+
+<div class="section">
+<div class="section-title">REFERRAL ACTIVITY</div>
+<table id="referralTable">
+<thead>
+<tr>
+<th>Customer</th>
+<th>Phone</th>
+<th>Service</th>
+<th>Amount</th>
+<th>Commission</th>
+<th>Status</th>
+<th>Date</th>
+</tr>
+</thead>
+<tbody id="referralBody"></tbody>
+</table>
+</div>
+
+<div class="section">
+<div class="section-title">CONTENT UPLOADS</div>
+<div class="info-box">Upload your content links to receive cashback. Cashback % depends on content quality and type.</div>
+<div id="uploadSection"></div>
+</div>
+
+<button class="secondary" onclick="logout()" style="width:auto">LOGOUT</button>
+</div>
+</div>
+
+<script>
+const WEB_APP_URL='https://script.google.com/macros/s/AKfycbzgnOFpVwbTPchPp5WFCCaKhhu8v3Vt7pdUyQ4LnvNhExE379jdueHS2TGioQGEpQ23Bw/exec';
+let currentCreator=null;
+
+function login(){
+const phone=document.getElementById('loginPhone').value.trim();
+const code=document.getElementById('loginCode').value.trim();
+if(!phone||!code){alert('Fill all fields');return}
+fetch(`${WEB_APP_URL}?action=creatorLogin&phone=${phone}&code=${code}`)
+.then(r=>r.json())
+.then(d=>{
+if(d.success){
+currentCreator=d.creator;
+showDashboard();
+}else alert('Invalid credentials');
+});
+}
+
+function showDashboard(){
+document.getElementById('loginSection').classList.add('hidden');
+document.getElementById('dashboard').classList.remove('hidden');
+document.getElementById('displayCode').textContent=currentCreator.code;
+loadDashboardData();
+}
+
+function loadDashboardData(){
+fetch(`${WEB_APP_URL}?action=getCreatorStats&code=${currentCreator.code}`)
+.then(r=>r.json())
+.then(d=>{
+document.getElementById('totalViews').textContent=d.views||0;
+document.getElementById('totalConversions').textContent=d.conversions||0;
+document.getElementById('convRate').textContent=d.views>0?((d.conversions/d.views)*100).toFixed(1)+'%':'0%';
+document.getElementById('totalEarnings').textContent='₹'+(d.earnings||0);
+document.getElementById('pendingPayout').textContent='₹'+(d.pending||0);
+const tbody=document.getElementById('referralBody');
+tbody.innerHTML='';
+(d.referrals||[]).forEach(r=>{
+const tr=document.createElement('tr');
+tr.innerHTML=`
+<td>${r.name}</td>
+<td>${r.phone}</td>
+<td>${r.service}</td>
+<td>₹${r.amount}</td>
+<td>₹${r.commission}</td>
+<td class="status-${r.status.toLowerCase()}">${r.status}</td>
+<td>${r.date}</td>
+`;
+tbody.appendChild(tr);
+});
+const uploadSection=document.getElementById('uploadSection');
+uploadSection.innerHTML='';
+if(d.pendingUploads&&d.pendingUploads.length>0){
+d.pendingUploads.forEach(u=>{
+const div=document.createElement('div');
+div.style.cssText='background:#0a0a0a;border:1px solid #333;padding:15px;margin:10px 0';
+div.innerHTML=`
+<strong>Booking #${u.bookingId}</strong> - ₹${u.amount}<br>
+<input type="url" id="video_${u.bookingId}" placeholder="Video/Content URL" style="width:70%;padding:8px;background:#000;border:1px solid #444;color:#fff;margin:10px 10px 10px 0">
+<button onclick="submitContent('${u.bookingId}')" style="padding:8px 20px;background:#fff;color:#000;border:none;cursor:pointer">SUBMIT</button>
+`;
+uploadSection.appendChild(div);
+});
+}else{
+uploadSection.innerHTML='<p style="color:#666">No pending content uploads</p>';
+}
+});
+}
+
+function submitContent(bookingId){
+const url=document.getElementById(`video_${bookingId}`).value.trim();
+if(!url){alert('Enter video URL');return}
+fetch(WEB_APP_URL,{method:'POST',body:JSON.stringify({
+action:'submitContent',
+code:currentCreator.code,
+bookingId,
+videoUrl:url
+})})
+.then(r=>r.json())
+.then(d=>{
+if(d.success){
+alert('Content submitted for review!');
+loadDashboardData();
+}else alert('Error: '+d.message);
+});
+}
+
+function copyCode(){
+navigator.clipboard.writeText(currentCreator.code);
+alert('Code copied!');
+}
+
+function logout(){
+currentCreator=null;
+document.getElementById('loginSection').classList.remove('hidden');
+document.getElementById('dashboard').classList.add('hidden');
+document.getElementById('loginPhone').value='';
+document.getElementById('loginCode').value='';
+}
+</script>
+</body>
+</html>
