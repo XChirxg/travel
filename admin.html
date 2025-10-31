@@ -4,61 +4,30 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Admin Dashboard</title>
-<style>
-*{margin:0;padding:0;box-sizing:border-box}
-body{font-family:'Segoe UI',system-ui,sans-serif;background:#000;color:#fff;line-height:1.6}
-.container{max-width:1400px;margin:0 auto;padding:20px}
-h1{font-family:'Playfair Display',serif;font-size:2.2em;margin-bottom:10px;letter-spacing:2px}
-.login-section{max-width:400px;margin:50px auto;background:#111;border:1px solid #333;padding:30px}
-.login-section input{width:100%;padding:12px;background:#000;border:1px solid #444;color:#fff;margin-bottom:15px}
-.login-section button{width:100%;padding:12px;background:#fff;color:#000;border:none;font-weight:700;cursor:pointer}
-.tabs{display:flex;gap:2px;margin-bottom:20px;border-bottom:1px solid #333}
-.tab{padding:12px 25px;background:#111;border:none;color:#888;cursor:pointer;font-weight:600}
-.tab.active{background:#1a1a1a;color:#fff;border-bottom:2px solid #4a9eff}
-.section{background:#111;border:1px solid #333;padding:20px;margin-bottom:20px}
-.section-title{font-size:1.2em;margin-bottom:15px;font-weight:600}
-table{width:100%;border-collapse:collapse;font-size:0.85em}
-th,td{text-align:left;padding:10px;border-bottom:1px solid #222}
-th{background:#0a0a0a;font-weight:600;color:#888;position:sticky;top:0}
-.status-new{color:#4a9eff}
-.status-contacted{color:#ff9500}
-.status-converted{color:#0f0}
-.status-lost{color:#f44}
-button.small{padding:6px 12px;background:#222;color:#fff;border:1px solid #444;cursor:pointer;font-size:0.85em;margin:0 2px}
-button.small:hover{background:#333}
-button.primary{background:#4a9eff;color:#000;border:none}
-button.danger{background:#f44;color:#fff;border:none}
-input.inline{padding:6px;background:#000;border:1px solid #444;color:#fff;width:80px}
-.stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:15px;margin-bottom:20px}
-.stat-card{background:#0a0a0a;border:1px solid #333;padding:20px;text-align:center}
-.stat-value{font-size:2em;font-weight:700;margin:5px 0}
-.stat-label{color:#888;font-size:0.85em}
-.hidden{display:none}
-.filter-bar{display:flex;gap:10px;margin-bottom:15px;flex-wrap:wrap}
-.filter-bar select,.filter-bar input{padding:8px;background:#000;border:1px solid #444;color:#fff}
-.creator-badge{background:#1a3a1a;color:#0f0;padding:2px 8px;font-size:0.8em;border:1px solid #0f0}
-.modal{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.9);display:flex;align-items:center;justify-content:center;z-index:1000}
-.modal-content{background:#111;border:1px solid #333;padding:30px;max-width:500px;width:90%}
-.modal-content input,.modal-content select,.modal-content textarea{width:100%;padding:10px;background:#000;border:1px solid #444;color:#fff;margin:10px 0}
-.modal-buttons{display:flex;gap:10px;margin-top:20px}
-.modal-buttons button{flex:1;padding:12px;cursor:pointer;font-weight:600}
-</style>
+<link rel="stylesheet" href="main.css">
 </head>
 <body>
 <div class="container">
-<div id="loginSection" class="login-section">
-<h1 style="font-size:1.8em;text-align:center;margin-bottom:20px">ADMIN LOGIN</h1>
-<input type="password" id="adminPass" placeholder="Admin Password">
+<div id="loginSection" class="section" style="max-width:400px;margin:50px auto">
+<h1 class="text-center">ADMIN LOGIN</h1>
+<input type="password" id="adminPass" placeholder="Password">
 <button onclick="adminLogin()">LOGIN</button>
 </div>
 
 <div id="adminPanel" class="hidden">
+<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px">
 <h1>ADMIN DASHBOARD</h1>
+<div style="display:flex;gap:10px">
+<button onclick="showQuickActions()" class="primary">⚡ QUICK ACTIONS</button>
+<button onclick="exportData()" class="secondary">📊 EXPORT</button>
+<button onclick="logout()" class="secondary">LOGOUT</button>
+</div>
+</div>
 
-<div class="stats-grid">
+<div class="grid grid-3 mb-20">
 <div class="stat-card">
 <div class="stat-label">TOTAL BOOKINGS</div>
-<div class="stat-value status-new" id="statTotal">0</div>
+<div class="stat-value" id="statTotal">0</div>
 </div>
 <div class="stat-card">
 <div class="stat-label">NEW</div>
@@ -77,8 +46,20 @@ input.inline{padding:6px;background:#000;border:1px solid #444;color:#fff;width:
 <div class="stat-value status-lost" id="statLost">0</div>
 </div>
 <div class="stat-card">
-<div class="stat-label">TOTAL REVENUE</div>
+<div class="stat-label">REVENUE</div>
 <div class="stat-value" id="statRevenue">₹0</div>
+</div>
+<div class="stat-card" style="cursor:pointer" onclick="showConversionRate()">
+<div class="stat-label">CONVERSION RATE</div>
+<div class="stat-value" id="statConvRate">0%</div>
+</div>
+<div class="stat-card" style="cursor:pointer" onclick="showAvgDeal()">
+<div class="stat-label">AVG DEAL SIZE</div>
+<div class="stat-value" id="statAvgDeal">₹0</div>
+</div>
+<div class="stat-card" style="cursor:pointer" onclick="showTopPerformer()">
+<div class="stat-label">TOP CREATOR</div>
+<div class="stat-value" id="statTopCreator" style="font-size:1em">-</div>
 </div>
 </div>
 
@@ -86,11 +67,20 @@ input.inline{padding:6px;background:#000;border:1px solid #444;color:#fff;width:
 <button class="tab active" onclick="showTab('bookings')">BOOKINGS</button>
 <button class="tab" onclick="showTab('creators')">CREATORS</button>
 <button class="tab" onclick="showTab('coupons')">COUPONS</button>
+<button class="tab" onclick="showTab('analytics')">📈 ANALYTICS</button>
+<button class="tab" onclick="showTab('followup')">📞 FOLLOW-UP</button>
 </div>
 
 <div id="bookingsTab" class="section">
-<div class="section-title">ALL BOOKINGS</div>
-<div class="filter-bar">
+<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:15px">
+<div class="section-title" style="margin:0">ALL BOOKINGS</div>
+<div style="display:flex;gap:10px">
+<button onclick="bulkUpdate()" class="primary">BULK UPDATE</button>
+<button onclick="sendBulkSMS()" class="primary">📱 BULK SMS</button>
+<button onclick="loadBookings()" class="secondary">REFRESH</button>
+</div>
+</div>
+<div style="display:flex;gap:10px;margin-bottom:15px">
 <select id="filterStatus" onchange="filterBookings()">
 <option value="">All Status</option>
 <option value="new">New</option>
@@ -98,22 +88,28 @@ input.inline{padding:6px;background:#000;border:1px solid #444;color:#fff;width:
 <option value="converted">Converted</option>
 <option value="lost">Lost</option>
 </select>
-<input type="text" id="searchBooking" placeholder="Search by name/phone" onkeyup="filterBookings()">
-<button class="small primary" onclick="loadBookings()">REFRESH</button>
+<select id="filterDate" onchange="filterBookings()">
+<option value="">All Time</option>
+<option value="today">Today</option>
+<option value="week">This Week</option>
+<option value="month">This Month</option>
+</select>
+<input type="text" id="searchBooking" placeholder="Search name/phone" onkeyup="filterBookings()" style="flex:1;margin:0">
+<button onclick="sortBookings()" class="secondary">SORT</button>
 </div>
-<div style="max-height:600px;overflow-y:auto">
+<div style="max-height:500px;overflow-y:auto">
 <table>
 <thead>
 <tr>
+<th><input type="checkbox" id="selectAll" onchange="toggleSelectAll()"></th>
 <th>ID</th>
 <th>Name</th>
 <th>Phone</th>
 <th>Service</th>
-<th>People</th>
-<th>Price</th>
+<th>Qty</th>
 <th>Final Price</th>
-<th>Creator</th>
 <th>Coupon</th>
+<th>Creator?</th>
 <th>Status</th>
 <th>Date</th>
 <th>Actions</th>
@@ -122,22 +118,41 @@ input.inline{padding:6px;background:#000;border:1px solid #444;color:#fff;width:
 <tbody id="bookingsBody"></tbody>
 </table>
 </div>
+<div id="bulkActions" class="hidden" style="margin-top:15px;padding:15px;background:#1a1a1a;border:1px solid #333">
+<strong><span id="selectedCount">0</span> bookings selected</strong>
+<div style="display:flex;gap:10px;margin-top:10px">
+<select id="bulkStatus">
+<option value="">Change Status</option>
+<option value="contacted">Contacted</option>
+<option value="converted">Converted</option>
+<option value="lost">Lost</option>
+</select>
+<button onclick="applyBulkStatus()" class="primary">APPLY</button>
+<button onclick="exportSelected()" class="secondary">EXPORT SELECTED</button>
+</div>
+</div>
 </div>
 
 <div id="creatorsTab" class="section hidden">
-<div class="section-title">CONTENT CREATORS</div>
-<button class="small primary" onclick="loadCreators()" style="margin-bottom:15px">REFRESH</button>
+<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:15px">
+<div class="section-title" style="margin:0">CONTENT CREATORS</div>
+<div>
+<button onclick="showAddCreatorWithCoupon()" class="primary">ADD CREATOR + COUPON</button>
+<button onclick="showLeaderboard()" class="primary">🏆 LEADERBOARD</button>
+<button onclick="loadCreators()" class="secondary">REFRESH</button>
+</div>
+</div>
 <table>
 <thead>
 <tr>
 <th>Name</th>
 <th>Phone</th>
-<th>Code</th>
-<th>Platforms</th>
 <th>Views</th>
 <th>Conversions</th>
+<th>Conv. Rate</th>
 <th>Earnings</th>
 <th>Pending</th>
+<th>Joined</th>
 <th>Actions</th>
 </tr>
 </thead>
@@ -146,31 +161,76 @@ input.inline{padding:6px;background:#000;border:1px solid #444;color:#fff;width:
 </div>
 
 <div id="couponsTab" class="section hidden">
-<div class="section-title">COUPON CODES</div>
-<button class="small primary" onclick="showAddCoupon()">ADD COUPON</button>
-<button class="small primary" onclick="loadCoupons()" style="margin-left:10px">REFRESH</button>
-<table style="margin-top:15px">
+<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:15px">
+<div class="section-title" style="margin:0">COUPON CODES</div>
+<div>
+<button onclick="showAddCoupon()" class="primary">ADD COUPON</button>
+<button onclick="generateBulkCoupons()" class="primary">BULK GENERATE</button>
+<button onclick="loadCoupons()" class="secondary">REFRESH</button>
+</div>
+</div>
+<table>
 <thead>
 <tr>
 <th>Code</th>
 <th>Discount %</th>
 <th>Uses</th>
-<th>Max Uses</th>
-<th>Expires</th>
-<th>Active</th>
+<th>Creator</th>
+<th>Performance</th>
+<th>Created</th>
 <th>Actions</th>
 </tr>
 </thead>
 <tbody id="couponsBody"></tbody>
 </table>
 </div>
+
+<div id="analyticsTab" class="section hidden">
+<div class="section-title">ANALYTICS & INSIGHTS</div>
+<div class="grid grid-2 mb-20">
+<div style="padding:20px;background:#0a0a0a;border:1px solid #333">
+<h3>Revenue Trend (Last 7 Days)</h3>
+<canvas id="revenueChart" style="max-height:200px"></canvas>
+</div>
+<div style="padding:20px;background:#0a0a0a;border:1px solid #333">
+<h3>Service Popularity</h3>
+<canvas id="serviceChart" style="max-height:200px"></canvas>
+</div>
+<div style="padding:20px;background:#0a0a0a;border:1px solid #333">
+<h3>Status Breakdown</h3>
+<canvas id="statusChart" style="max-height:200px"></canvas>
+</div>
+<div style="padding:20px;background:#0a0a0a;border:1px solid #333">
+<h3>Coupon Performance</h3>
+<div id="couponPerformance"></div>
+</div>
+</div>
+<button onclick="generateReport()" class="primary">📄 GENERATE FULL REPORT</button>
+</div>
+
+<div id="followupTab" class="section hidden">
+<div class="section-title">FOLLOW-UP REMINDERS</div>
+<div style="margin-bottom:20px">
+<button onclick="showAddReminder()" class="primary">+ ADD REMINDER</button>
+</div>
+<div id="remindersList"></div>
 </div>
 </div>
 
+<!-- MODALS -->
 <div id="editModal" class="modal hidden">
 <div class="modal-content">
-<div class="section-title">EDIT BOOKING</div>
+<div class="section-title">BOOKING DETAILS</div>
 <input type="hidden" id="editId">
+
+<div id="bookingInfo" style="margin-bottom:20px;padding:15px;background:#0a0a0a;border:1px solid #333"></div>
+
+<div id="creatorRequestInfo" class="hidden" style="margin-bottom:20px;padding:15px;background:#1a3a1a;border:1px solid #0f0">
+<strong style="color:#0f0">CREATOR APPLICATION</strong>
+<div id="creatorDetails" style="margin-top:10px;color:#ccc"></div>
+<button onclick="approveCreatorFromBooking()" class="primary" style="margin-top:10px">APPROVE AS CREATOR + CREATE COUPON</button>
+</div>
+
 <label>Status</label>
 <select id="editStatus">
 <option value="new">New</option>
@@ -182,9 +242,28 @@ input.inline{padding:6px;background:#000;border:1px solid #444;color:#fff;width:
 <input type="number" id="editPrice">
 <label>Notes</label>
 <textarea id="editNotes" rows="3"></textarea>
-<div class="modal-buttons">
-<button onclick="saveBooking()" style="background:#0f0;color:#000">SAVE</button>
-<button onclick="closeModal()" style="background:#222;color:#fff">CANCEL</button>
+<div style="display:flex;gap:10px;margin-top:20px">
+<button onclick="saveBooking()" class="primary" style="flex:1">SAVE</button>
+<button onclick="callCustomer()" class="secondary" style="flex:1">📞 CALL</button>
+<button onclick="closeModal('editModal')" class="secondary" style="flex:1">CANCEL</button>
+</div>
+</div>
+</div>
+
+<div id="creatorCouponModal" class="modal hidden">
+<div class="modal-content">
+<div class="section-title">ADD CREATOR + COUPON</div>
+<label>Name</label>
+<input type="text" id="ccName" oninput="generateCouponCode()">
+<label>Phone</label>
+<input type="tel" id="ccPhone">
+<label>Coupon Code</label>
+<input type="text" id="ccCouponCode" style="text-transform:uppercase">
+<label>Discount %</label>
+<input type="number" id="ccDiscount" value="5" min="1" max="100">
+<div style="display:flex;gap:10px;margin-top:20px">
+<button onclick="saveCreatorWithCoupon()" class="primary" style="flex:1">CREATE</button>
+<button onclick="closeModal('creatorCouponModal')" class="secondary" style="flex:1">CANCEL</button>
 </div>
 </div>
 </div>
@@ -196,223 +275,1281 @@ input.inline{padding:6px;background:#000;border:1px solid #444;color:#fff;width:
 <input type="text" id="couponCode">
 <label>Discount %</label>
 <input type="number" id="couponDiscount" min="1" max="100">
-<label>Max Uses</label>
-<input type="number" id="couponMax" value="100">
-<label>Expires (days)</label>
-<input type="number" id="couponExpiry" value="30">
-<div class="modal-buttons">
-<button onclick="saveCoupon()" style="background:#0f0;color:#000">CREATE</button>
-<button onclick="document.getElementById('couponModal').classList.add('hidden')" style="background:#222;color:#fff">CANCEL</button>
+<label>Creator Phone (optional)</label>
+<input type="tel" id="couponCreator" placeholder="Leave empty for general coupon">
+<div style="display:flex;gap:10px;margin-top:20px">
+<button onclick="saveCoupon()" class="primary" style="flex:1">CREATE</button>
+<button onclick="closeModal('couponModal')" class="secondary" style="flex:1">CANCEL</button>
 </div>
 </div>
 </div>
 
+<div id="quickActionsModal" class="modal hidden">
+<div class="modal-content">
+<div class="section-title">⚡ QUICK ACTIONS</div>
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+<button onclick="quickConvertNew()" class="primary">Convert All NEW</button>
+<button onclick="quickContactNew()" class="primary">Contact All NEW</button>
+<button onclick="findDuplicates()" class="secondary">Find Duplicates</button>
+<button onclick="showLostReasons()" class="secondary">Lost Reasons</button>
+<button onclick="calculateROI()" class="secondary">Calculate ROI</button>
+<button onclick="predictRevenue()" class="secondary">Predict Revenue</button>
+<button onclick="sendWelcomeSMS()" class="primary">Welcome SMS (New)</button>
+<button onclick="sendFollowUpSMS()" class="primary">Follow-up SMS</button>
+</div>
+<button onclick="closeModal('quickActionsModal')" class="secondary" style="margin-top:20px;width:100%">CLOSE</button>
+</div>
+</div>
+
+<div id="bulkCouponModal" class="modal hidden">
+<div class="modal-content">
+<div class="section-title">BULK COUPON GENERATOR</div>
+<label>Prefix</label>
+<input type="text" id="bulkPrefix" placeholder="e.g., WINTER">
+<label>Number of Coupons</label>
+<input type="number" id="bulkCount" value="10" min="1" max="100">
+<label>Discount %</label>
+<input type="number" id="bulkDiscount" value="10" min="1" max="100">
+<div style="display:flex;gap:10px;margin-top:20px">
+<button onclick="generateCoupons()" class="primary" style="flex:1">GENERATE</button>
+<button onclick="closeModal('bulkCouponModal')" class="secondary" style="flex:1">CANCEL</button>
+</div>
+</div>
+</div>
+
+<div id="reminderModal" class="modal hidden">
+<div class="modal-content">
+<div class="section-title">ADD FOLLOW-UP REMINDER</div>
+<label>Customer</label>
+<select id="reminderBooking"></select>
+<label>Reminder Date & Time</label>
+<input type="datetime-local" id="reminderDate">
+<label>Note</label>
+<textarea id="reminderNote" rows="2"></textarea>
+<div style="display:flex;gap:10px;margin-top:20px">
+<button onclick="saveReminder()" class="primary" style="flex:1">SAVE</button>
+<button onclick="closeModal('reminderModal')" class="secondary" style="flex:1">CANCEL</button>
+</div>
+</div>
+</div>
+
+<div id="leaderboardModal" class="modal hidden">
+<div class="modal-content" style="max-width:600px">
+<div class="section-title">🏆 CREATOR LEADERBOARD</div>
+<div id="leaderboardContent"></div>
+<button onclick="closeModal('leaderboardModal')" class="secondary" style="margin-top:20px;width:100%">CLOSE</button>
+</div>
+</div>
+
+<div id="smsModal" class="modal hidden">
+<div class="modal-content">
+<div class="section-title">📱 SEND BULK SMS</div>
+<div id="smsRecipients" style="margin-bottom:15px;padding:10px;background:#0a0a0a;border:1px solid #333"></div>
+<label>Message Template</label>
+<select id="smsTemplate" onchange="loadSMSTemplate()">
+<option value="">Custom Message</option>
+<option value="welcome">Welcome Message</option>
+<option value="followup">Follow-up</option>
+<option value="discount">Special Discount</option>
+<option value="reminder">Payment Reminder</option>
+</select>
+<label>Message</label>
+<textarea id="smsMessage" rows="4" placeholder="Type your message..."></textarea>
+<div style="margin:10px 0;color:#888;font-size:0.9em">
+Characters: <span id="smsCharCount">0</span> | Estimated Cost: ₹<span id="smsCost">0</span>
+</div>
+<div style="display:flex;gap:10px;margin-top:20px">
+<button onclick="sendSMS()" class="primary" style="flex:1">SEND</button>
+<button onclick="closeModal('smsModal')" class="secondary" style="flex:1">CANCEL</button>
+</div>
+</div>
+</div>
+
+<div id="loadingOverlay" class="loading-overlay hidden">
+<div class="loading"></div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
 <script>
-const WEB_APP_URL='https://script.google.com/macros/s/AKfycbz2FBtwYXswBTPtoF5zhpo1QWUtVn4VhZ_r7_duDf4oafOvxG6z5BAxJbfFvzq2MlSaTQ/exec';
-const ADMIN_PASS='admin123';
+const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbwHJf1DA9D_itesCVkTtb0TeGFAorqnQ5hR1PdBDUVhXLVkk55IDW5hD2sLJPsPHsWkLQ/exec';
+const ADMIN_PASS = 'admin123';
+let allBookings = [];
+let allCreators = [];
+let allCoupons = [];
+let currentBookingForCreator = null;
+let selectedBookings = new Set();
+let reminders = [];
+let sortOrder = 'desc';
 
-function adminLogin(){
-if(document.getElementById('adminPass').value===ADMIN_PASS){
-document.getElementById('loginSection').classList.add('hidden');
-document.getElementById('adminPanel').classList.remove('hidden');
-loadDashboard();
-}else alert('Invalid password');
-}
-
-function loadDashboard(){
-loadBookings();
-loadStats();
-}
-
-function loadStats(){
-fetch(`${WEB_APP_URL}?action=getAdminStats`)
-.then(r=>r.json())
-.then(d=>{
-document.getElementById('statTotal').textContent=d.total||0;
-document.getElementById('statNew').textContent=d.new||0;
-document.getElementById('statContacted').textContent=d.contacted||0;
-document.getElementById('statConverted').textContent=d.converted||0;
-document.getElementById('statLost').textContent=d.lost||0;
-document.getElementById('statRevenue').textContent='₹'+(d.revenue||0);
-});
+function adminLogin() {
+  if (document.getElementById('adminPass').value === ADMIN_PASS) {
+    document.getElementById('loginSection').classList.add('hidden');
+    document.getElementById('adminPanel').classList.remove('hidden');
+    loadDashboard();
+  } else {
+    showToast('Invalid password', 'error');
+  }
 }
 
-function loadBookings(){
-fetch(`${WEB_APP_URL}?action=getBookings`)
-.then(r=>r.json())
-.then(d=>{
-const tbody=document.getElementById('bookingsBody');
-tbody.innerHTML='';
-window.allBookings=d.bookings||[];
-filterBookings();
-});
+function logout() {
+  document.getElementById('loginSection').classList.remove('hidden');
+  document.getElementById('adminPanel').classList.add('hidden');
+  document.getElementById('adminPass').value = '';
 }
 
-function filterBookings(){
-const status=document.getElementById('filterStatus').value;
-const search=document.getElementById('searchBooking').value.toLowerCase();
-const filtered=window.allBookings.filter(b=>
-(!status||b.status===status)&&
-(!search||b.name.toLowerCase().includes(search)||b.phone.includes(search))
-);
-const tbody=document.getElementById('bookingsBody');
-tbody.innerHTML='';
-filtered.forEach(b=>{
-const tr=document.createElement('tr');
-tr.innerHTML=`
-<td>${b.id}</td>
-<td>${b.name}</td>
-<td><a href="tel:${b.phone}" style="color:#4a9eff">${b.phone}</a></td>
-<td>${b.service}</td>
-<td>${b.people}</td>
-<td>₹${b.basePrice}</td>
-<td>₹${b.finalPrice}</td>
-<td>${b.isCreator?'<span class="creator-badge">'+b.creatorCode+'</span>':'-'}</td>
-<td>${b.coupon||'-'}</td>
-<td class="status-${b.status}">${b.status.toUpperCase()}</td>
-<td>${b.date}</td>
-<td>
-<button class="small" onclick="editBooking('${b.id}')">EDIT</button>
-<button class="small" onclick="callCustomer('${b.phone}')">CALL</button>
-</td>
-`;
-tbody.appendChild(tr);
-});
+function loadDashboard() {
+  loadStats();
+  loadBookings();
+  loadReminders();
 }
 
-function editBooking(id){
-const booking=window.allBookings.find(b=>b.id===id);
-document.getElementById('editId').value=id;
-document.getElementById('editStatus').value=booking.status;
-document.getElementById('editPrice').value=booking.finalPrice;
-document.getElementById('editNotes').value=booking.notes||'';
-document.getElementById('editModal').classList.remove('hidden');
+function loadStats() {
+  fetch(`${WEB_APP_URL}?action=getAdminStats`)
+    .then(r => r.json())
+    .then(d => {
+      document.getElementById('statTotal').textContent = d.total || 0;
+      document.getElementById('statNew').textContent = d.new || 0;
+      document.getElementById('statContacted').textContent = d.contacted || 0;
+      document.getElementById('statConverted').textContent = d.converted || 0;
+      document.getElementById('statLost').textContent = d.lost || 0;
+      document.getElementById('statRevenue').textContent = '₹' + (d.revenue || 0);
+      
+      // Calculate conversion rate
+      const convRate = d.total > 0 ? ((d.converted / d.total) * 100).toFixed(1) : 0;
+      document.getElementById('statConvRate').textContent = convRate + '%';
+      
+      // Calculate average deal size
+      const avgDeal = d.converted > 0 ? Math.round(d.revenue / d.converted) : 0;
+      document.getElementById('statAvgDeal').textContent = '₹' + avgDeal;
+    });
 }
 
-function saveBooking(){
-const id=document.getElementById('editId').value;
-const status=document.getElementById('editStatus').value;
-const price=document.getElementById('editPrice').value;
-const notes=document.getElementById('editNotes').value;
-fetch(WEB_APP_URL,{method:'POST',body:JSON.stringify({
-action:'updateBooking',
-id,status,finalPrice:price,notes
-})})
-.then(r=>r.json())
-.then(d=>{
-if(d.success){
-alert('Updated!');
-closeModal();
-loadBookings();
-loadStats();
-}else alert('Error');
-});
+function loadBookings() {
+  showLoading();
+  fetch(`${WEB_APP_URL}?action=getBookings`)
+    .then(r => r.json())
+    .then(d => {
+      hideLoading();
+      allBookings = d.bookings || [];
+      filterBookings();
+      updateTopCreator();
+    })
+    .catch(() => {
+      hideLoading();
+      showToast('Error loading bookings', 'error');
+    });
 }
 
-function closeModal(){
-document.getElementById('editModal').classList.add('hidden');
+function filterBookings() {
+  const status = document.getElementById('filterStatus').value;
+  const dateFilter = document.getElementById('filterDate').value;
+  const search = document.getElementById('searchBooking').value.toLowerCase();
+  
+  let filtered = allBookings.filter(b => {
+    const matchStatus = !status || b.status === status;
+    const matchSearch = !search || b.name.toLowerCase().includes(search) || b.phone.includes(search);
+    let matchDate = true;
+    
+    if (dateFilter) {
+      const bookingDate = new Date(b.date);
+      const now = new Date();
+      
+      if (dateFilter === 'today') {
+        matchDate = bookingDate.toDateString() === now.toDateString();
+      } else if (dateFilter === 'week') {
+        const weekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+        matchDate = bookingDate >= weekAgo;
+      } else if (dateFilter === 'month') {
+        matchDate = bookingDate.getMonth() === now.getMonth() && bookingDate.getFullYear() === now.getFullYear();
+      }
+    }
+    
+    return matchStatus && matchSearch && matchDate;
+  });
+  
+  const tbody = document.getElementById('bookingsBody');
+  tbody.innerHTML = filtered.map(b => `
+    <tr>
+      <td><input type="checkbox" class="booking-check" data-id="${b.id}" onchange="updateSelection()"></td>
+      <td>${b.id}</td>
+      <td>${b.name}</td>
+      <td><a href="tel:${b.phone}" style="color:#4a9eff">${b.phone}</a></td>
+      <td>${b.service}</td>
+      <td>${b.quantity}</td>
+      <td>₹${b.finalPrice}</td>
+      <td>${b.coupon || '-'}</td>
+      <td>${b.isCreatorRequest ? '<span style="background:#1a3a1a;color:#0f0;padding:2px 8px;font-size:0.8em">YES</span>' : '-'}</td>
+      <td class="status-${b.status}">${b.status.toUpperCase()}</td>
+      <td style="font-size:0.8em">${b.date}</td>
+      <td>
+        <button onclick="viewBooking('${b.id}')" class="secondary">VIEW</button>
+        <button onclick="deleteBooking('${b.id}')" class="danger">DEL</button>
+      </td>
+    </tr>
+  `).join('');
 }
 
-function callCustomer(phone){
-window.open(`tel:${phone}`);
+function toggleSelectAll() {
+  const selectAll = document.getElementById('selectAll').checked;
+  document.querySelectorAll('.booking-check').forEach(cb => {
+    cb.checked = selectAll;
+    if (selectAll) selectedBookings.add(cb.dataset.id);
+    else selectedBookings.delete(cb.dataset.id);
+  });
+  updateSelection();
 }
 
-function loadCreators(){
-fetch(`${WEB_APP_URL}?action=getAllCreators`)
-.then(r=>r.json())
-.then(d=>{
-const tbody=document.getElementById('creatorsBody');
-tbody.innerHTML='';
-(d.creators||[]).forEach(c=>{
-const tr=document.createElement('tr');
-tr.innerHTML=`
-<td>${c.name}</td>
-<td>${c.phone}</td>
-<td><strong>${c.code}</strong></td>
-<td>${c.platforms}</td>
-<td>${c.views}</td>
-<td>${c.conversions}</td>
-<td>₹${c.earnings}</td>
-<td>₹${c.pending}</td>
-<td><button class="small" onclick="payCreator('${c.code}')">PAY OUT</button></td>
-`;
-tbody.appendChild(tr);
-});
-});
+function updateSelection() {
+  selectedBookings.clear();
+  document.querySelectorAll('.booking-check:checked').forEach(cb => {
+    selectedBookings.add(cb.dataset.id);
+  });
+  
+  const count = selectedBookings.size;
+  document.getElementById('selectedCount').textContent = count;
+  document.getElementById('bulkActions').classList.toggle('hidden', count === 0);
 }
 
-function payCreator(code){
-if(confirm('Mark all pending earnings as paid?')){
-fetch(WEB_APP_URL,{method:'POST',body:JSON.stringify({action:'payoutCreator',code})})
-.then(r=>r.json())
-.then(d=>{
-if(d.success){alert('Paid!');loadCreators();}
-});
-}
-}
-
-function loadCoupons(){
-fetch(`${WEB_APP_URL}?action=getCoupons`)
-.then(r=>r.json())
-.then(d=>{
-const tbody=document.getElementById('couponsBody');
-tbody.innerHTML='';
-(d.coupons||[]).forEach(c=>{
-const tr=document.createElement('tr');
-tr.innerHTML=`
-<td><strong>${c.code}</strong></td>
-<td>${c.discount}%</td>
-<td>${c.uses}</td>
-<td>${c.maxUses}</td>
-<td>${c.expires}</td>
-<td>${c.active?'✓':'✗'}</td>
-<td><button class="small danger" onclick="deleteCoupon('${c.code}')">DELETE</button></td>
-`;
-tbody.appendChild(tr);
-});
-});
+function sortBookings() {
+  sortOrder = sortOrder === 'desc' ? 'asc' : 'desc';
+  allBookings.sort((a, b) => {
+    const dateA = new Date(a.date);
+    const dateB = new Date(b.date);
+    return sortOrder === 'desc' ? dateB - dateA : dateA - dateB;
+  });
+  filterBookings();
+  showToast(`Sorted by date (${sortOrder === 'desc' ? 'newest first' : 'oldest first'})`, 'info');
 }
 
-function showAddCoupon(){
-document.getElementById('couponModal').classList.remove('hidden');
+function bulkUpdate() {
+  if (selectedBookings.size === 0) {
+    showToast('Select bookings first', 'error');
+    return;
+  }
+  document.getElementById('bulkActions').scrollIntoView({behavior: 'smooth'});
 }
 
-function saveCoupon(){
-const code=document.getElementById('couponCode').value.trim().toUpperCase();
-const discount=document.getElementById('couponDiscount').value;
-const max=document.getElementById('couponMax').value;
-const expiry=document.getElementById('couponExpiry').value;
-if(!code||!discount){alert('Fill all fields');return}
-fetch(WEB_APP_URL,{method:'POST',body:JSON.stringify({
-action:'createCoupon',code,discount,maxUses:max,expiryDays:expiry
-})})
-.then(r=>r.json())
-.then(d=>{
-if(d.success){
-alert('Coupon created!');
-document.getElementById('couponModal').classList.add('hidden');
-loadCoupons();
-}
-});
+function applyBulkStatus() {
+  const status = document.getElementById('bulkStatus').value;
+  if (!status) {
+    showToast('Select a status', 'error');
+    return;
+  }
+  
+  if (!confirm(`Update ${selectedBookings.size} bookings to ${status}?`)) return;
+  
+  showLoading();
+  const promises = Array.from(selectedBookings).map(id => {
+    const booking = allBookings.find(b => b.id === id);
+    return fetch(WEB_APP_URL, {
+      method: 'POST',
+      body: JSON.stringify({
+        action: 'updateBooking',
+        id: id,
+        status: status,
+        finalPrice: booking.finalPrice,
+        notes: booking.notes || ''
+      })
+    });
+  });
+  
+  Promise.all(promises).then(() => {
+    hideLoading();
+    showToast('Bulk update completed!', 'success');
+    selectedBookings.clear();
+    loadBookings();
+    loadStats();
+  });
 }
 
-function deleteCoupon(code){
-if(confirm('Delete '+code+'?')){
-fetch(WEB_APP_URL,{method:'POST',body:JSON.stringify({action:'deleteCoupon',code})})
-.then(r=>r.json())
-.then(d=>{if(d.success)loadCoupons()});
-}
+function viewBooking(id) {
+  const booking = allBookings.find(b => b.id === id);
+  if (!booking) return;
+  
+  document.getElementById('editId').value = id;
+  document.getElementById('editStatus').value = booking.status;
+  document.getElementById('editPrice').value = booking.finalPrice;
+  document.getElementById('editNotes').value = booking.notes || '';
+  
+  const info = `
+    <strong>Service:</strong> ${booking.service}<br>
+    <strong>Quantity:</strong> ${booking.quantity}<br>
+    <strong>Base Price:</strong> ₹${booking.basePrice}<br>
+    <strong>Discount:</strong> ${booking.discount}%<br>
+    <strong>Final Price:</strong> ₹${booking.finalPrice}<br>
+    <strong>Coupon:</strong> ${booking.coupon || 'None'}
+  `;
+  document.getElementById('bookingInfo').innerHTML = info;
+  
+  if (booking.isCreatorRequest) {
+    const creatorInfo = `
+      <strong>Platforms:</strong> ${booking.creatorPlatforms}<br>
+      <strong>Handle:</strong> ${booking.creatorHandle}<br>
+      <strong>Followers:</strong> ${booking.creatorFollowers}
+    `;
+    document.getElementById('creatorDetails').innerHTML = creatorInfo;
+    document.getElementById('creatorRequestInfo').classList.remove('hidden');
+    currentBookingForCreator = booking;
+  } else {
+    document.getElementById('creatorRequestInfo').classList.add('hidden');
+    currentBookingForCreator = null;
+  }
+  
+  document.getElementById('editModal').classList.remove('hidden');
 }
 
-function showTab(tab){
-document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
-event.target.classList.add('active');
-document.getElementById('bookingsTab').classList.add('hidden');
-document.getElementById('creatorsTab').classList.add('hidden');
-document.getElementById('couponsTab').classList.add('hidden');
-if(tab==='bookings'){document.getElementById('bookingsTab').classList.remove('hidden');loadBookings()}
-if(tab==='creators'){document.getElementById('creatorsTab').classList.remove('hidden');loadCreators()}
-if(tab==='coupons'){document.getElementById('couponsTab').classList.remove('hidden');loadCoupons()}
+function callCustomer() {
+  const id = document.getElementById('editId').value;
+  const booking = allBookings.find(b => b.id === id);
+  if (booking) {
+    window.location.href = `tel:${booking.phone}`;
+  }
+}
+
+function saveBooking() {
+  const id = document.getElementById('editId').value;
+  const status = document.getElementById('editStatus').value;
+  const price = document.getElementById('editPrice').value;
+  const notes = document.getElementById('editNotes').value;
+  
+  showLoading();
+  fetch(WEB_APP_URL, {
+    method: 'POST',
+    body: JSON.stringify({
+      action: 'updateBooking',
+      id, status, finalPrice: price, notes
+    })
+  })
+  .then(r => r.json())
+  .then(d => {
+    hideLoading();
+    if (d.success) {
+      showToast('Booking updated', 'success');
+      closeModal('editModal');
+      loadBookings();
+      loadStats();
+    } else {
+      showToast('Error: ' + (d.error || 'Unknown'), 'error');
+    }
+  });
+}
+
+function deleteBooking(id) {
+  if (!confirm('Delete this booking?')) return;
+  
+  showLoading();
+  fetch(WEB_APP_URL, {
+    method: 'POST',
+    body: JSON.stringify({action: 'deleteBooking', id})
+  })
+  .then(r => r.json())
+  .then(d => {
+    hideLoading();
+    if (d.success) {
+      showToast('Deleted', 'success');
+      loadBookings();
+      loadStats();
+    }
+  });
+}
+
+function approveCreatorFromBooking() {
+  if (!currentBookingForCreator) return;
+  
+  const name = currentBookingForCreator.name;
+  const phone = currentBookingForCreator.phone;
+  const couponCode = generateCodeFromName(name);
+  const discount = 5;
+  
+  if (!confirm(`Approve ${name} as creator with coupon ${couponCode} (${discount}% discount)?`)) return;
+  
+  showLoading();
+  
+  fetch(WEB_APP_URL, {
+    method: 'POST',
+    body: JSON.stringify({action: 'createCreator', name, phone})
+  })
+  .then(r => r.json())
+  .then(d => {
+    if (d.success || d.error === 'Phone already registered') {
+      return fetch(WEB_APP_URL, {
+        method: 'POST',
+        body: JSON.stringify({
+          action: 'createCoupon',
+          code: couponCode,
+          discount: discount,
+          creatorPhone: phone
+        })
+      });
+    } else {
+      throw new Error(d.error || 'Failed to create creator');
+    }
+  })
+  .then(r => r.json())
+  .then(d => {
+    hideLoading();
+    if (d.success) {
+      showToast(`Creator approved! Coupon: ${couponCode}`, 'success');
+      closeModal('editModal');
+      loadBookings();
+      loadCreators();
+      loadCoupons();
+    } else {
+      showToast('Error: ' + (d.error || 'Unknown'), 'error');
+    }
+  })
+  .catch(err => {
+    hideLoading();
+    showToast('Error: ' + err.message, 'error');
+  });
+}
+
+function loadCreators() {
+  showLoading();
+  fetch(`${WEB_APP_URL}?action=getAllCreators`)
+    .then(r => r.json())
+    .then(d => {
+      hideLoading();
+      allCreators = d.creators || [];
+      const tbody = document.getElementById('creatorsBody');
+      tbody.innerHTML = allCreators.map(c => {
+        const convRate = c.views > 0 ? ((c.conversions / c.views) * 100).toFixed(1) : 0;
+        return `
+        <tr>
+          <td>${c.name}</td>
+          <td>${c.phone}</td>
+          <td>${c.views}</td>
+          <td>${c.conversions}</td>
+          <td>${convRate}%</td>
+          <td>₹${c.earnings}</td>
+          <td>₹${c.pending}</td>
+          <td style="font-size:0.8em">${c.dateJoined}</td>
+          <td>
+            <button onclick="payCreator('${c.phone}')" class="primary">PAYOUT</button>
+          </td>
+        </tr>
+      `}).join('');
+      updateTopCreator();
+    });
+}
+
+function updateTopCreator() {
+  if (allCreators.length === 0) {
+    fetch(`${WEB_APP_URL}?action=getAllCreators`)
+      .then(r => r.json())
+      .then(d => {
+        allCreators = d.creators || [];
+        displayTopCreator();
+      });
+  } else {
+    displayTopCreator();
+  }
+}
+
+function displayTopCreator() {
+  if (allCreators.length > 0) {
+    const top = allCreators.reduce((max, c) => c.conversions > max.conversions ? c : max, allCreators[0]);
+    document.getElementById('statTopCreator').textContent = top.name;
+  }
+}
+
+function showAddCreatorWithCoupon() {
+  document.getElementById('ccName').value = '';
+  document.getElementById('ccPhone').value = '';
+  document.getElementById('ccCouponCode').value = '';
+  document.getElementById('ccDiscount').value = '5';
+  document.getElementById('creatorCouponModal').classList.remove('hidden');
+}
+
+function generateCodeFromName(name) {
+  const words = name.toUpperCase().replace(/[^A-Z\s]/g, '').split(/\s+/).filter(w => w.length > 0);
+  let code = '';
+  
+  for (let word of words) {
+    code += word;
+    if (code.length >= 4) break;
+  }
+  code = code.substring(0, 4).padEnd(4, 'X');
+  
+  for (let i = 0; i < 4; i++) {
+    code += Math.floor(Math.random() * 10);
+  }
+  
+  return code;
+}
+
+function generateCouponCode() {
+  const name = document.getElementById('ccName').value.trim();
+  if (name) {
+    document.getElementById('ccCouponCode').value = generateCodeFromName(name);
+  }
+}
+
+function saveCreatorWithCoupon() {
+  const name = document.getElementById('ccName').value.trim();
+  const phone = document.getElementById('ccPhone').value.trim();
+  const couponCode = document.getElementById('ccCouponCode').value.trim().toUpperCase();
+  const discount = document.getElementById('ccDiscount').value;
+  
+  if (!name || !phone || !couponCode || !discount) {
+    showToast('Fill all fields', 'error');
+    return;
+  }
+  
+  showLoading();
+  
+  fetch(WEB_APP_URL, {
+    method: 'POST',
+    body: JSON.stringify({action: 'createCreator', name, phone})
+  })
+  .then(r => r.json())
+  .then(d => {
+    if (d.success || d.error === 'Phone already registered') {
+      return fetch(WEB_APP_URL, {
+        method: 'POST',
+        body: JSON.stringify({
+          action: 'createCoupon',
+          code: couponCode,
+          discount: discount,
+          creatorPhone: phone
+        })
+      });
+    } else {
+      throw new Error(d.error || 'Failed to create creator');
+    }
+  })
+  .then(r => r.json())
+  .then(d => {
+    hideLoading();
+    if (d.success) {
+      showToast('Creator and coupon created!', 'success');
+      closeModal('creatorCouponModal');
+      loadCreators();
+      loadCoupons();
+    } else {
+      showToast('Error: ' + (d.error || 'Unknown'), 'error');
+    }
+  })
+  .catch(err => {
+    hideLoading();
+    showToast('Error: ' + err.message, 'error');
+  });
+}
+
+function payCreator(phone) {
+  if (!confirm('Mark all pending as paid?')) return;
+  
+  showLoading();
+  fetch(WEB_APP_URL, {
+    method: 'POST',
+    body: JSON.stringify({action: 'payoutCreator', phone})
+  })
+  .then(r => r.json())
+  .then(d => {
+    hideLoading();
+    if (d.success) {
+      showToast('Payout completed', 'success');
+      loadCreators();
+    }
+  });
+}
+
+function loadCoupons() {
+  showLoading();
+  fetch(`${WEB_APP_URL}?action=getCoupons`)
+    .then(r => r.json())
+    .then(d => {
+      hideLoading();
+      allCoupons = d.coupons || [];
+      const tbody = document.getElementById('couponsBody');
+      tbody.innerHTML = allCoupons.map(c => {
+        const performance = c.uses > 0 ? '🔥' : '❄️';
+        return `
+        <tr>
+          <td><strong>${c.code}</strong></td>
+          <td>${c.discount}%</td>
+          <td>${c.uses}</td>
+          <td>${c.creatorPhone || 'General'}</td>
+          <td>${performance} ${c.uses} uses</td>
+          <td style="font-size:0.8em">${c.dateCreated}</td>
+          <td>
+            <button onclick="deleteCoupon('${c.code}')" class="danger">DELETE</button>
+          </td>
+        </tr>
+      `}).join('');
+    });
+}
+
+function showAddCoupon() {
+  document.getElementById('couponModal').classList.remove('hidden');
+}
+
+function saveCoupon() {
+  const code = document.getElementById('couponCode').value.trim().toUpperCase();
+  const discount = document.getElementById('couponDiscount').value;
+  const creator = document.getElementById('couponCreator').value.trim();
+  
+  if (!code || !discount) {
+    showToast('Fill required fields', 'error');
+    return;
+  }
+  
+  showLoading();
+  fetch(WEB_APP_URL, {
+    method: 'POST',
+    body: JSON.stringify({
+      action: 'createCoupon',
+      code, discount, creatorPhone: creator
+    })
+  })
+  .then(r => r.json())
+  .then(d => {
+    hideLoading();
+    if (d.success) {
+      showToast('Coupon created', 'success');
+      closeModal('couponModal');
+      loadCoupons();
+      document.getElementById('couponCode').value = '';
+      document.getElementById('couponDiscount').value = '';
+      document.getElementById('couponCreator').value = '';
+    } else {
+      showToast('Error: ' + (d.error || 'Unknown'), 'error');
+    }
+  });
+}
+
+function deleteCoupon(code) {
+  if (!confirm('Delete ' + code + '?')) return;
+  
+  showLoading();
+  fetch(WEB_APP_URL, {
+    method: 'POST',
+    body: JSON.stringify({action: 'deleteCoupon', code})
+  })
+  .then(r => r.json())
+  .then(d => {
+    hideLoading();
+    if (d.success) {
+      showToast('Deleted', 'success');
+      loadCoupons();
+    }
+  });
+}
+
+function generateBulkCoupons() {
+  document.getElementById('bulkCouponModal').classList.remove('hidden');
+}
+
+function generateCoupons() {
+  const prefix = document.getElementById('bulkPrefix').value.trim().toUpperCase();
+  const count = parseInt(document.getElementById('bulkCount').value);
+  const discount = document.getElementById('bulkDiscount').value;
+  
+  if (!prefix || count < 1) {
+    showToast('Fill all fields', 'error');
+    return;
+  }
+  
+  showLoading();
+  const promises = [];
+  
+  for (let i = 0; i < count; i++) {
+    const code = prefix + Math.floor(1000 + Math.random() * 9000);
+    promises.push(
+      fetch(WEB_APP_URL, {
+        method: 'POST',
+        body: JSON.stringify({
+          action: 'createCoupon',
+          code: code,
+          discount: discount,
+          creatorPhone: ''
+        })
+      })
+    );
+  }
+  
+  Promise.all(promises).then(() => {
+    hideLoading();
+    showToast(`${count} coupons created!`, 'success');
+    closeModal('bulkCouponModal');
+    loadCoupons();
+  });
+}
+
+function showLeaderboard() {
+  const sorted = [...allCreators].sort((a, b) => b.earnings - a.earnings);
+  const html = sorted.map((c, i) => {
+    const medal = i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : `#${i + 1}`;
+    return `
+      <div style="padding:15px;margin-bottom:10px;background:${i < 3 ? '#1a3a1a' : '#0a0a0a'};border:1px solid ${i < 3 ? '#0f0' : '#333'}">
+        <strong>${medal} ${c.name}</strong><br>
+        <span style="color:#888">Conversions: ${c.conversions} | Earnings: ₹${c.earnings}</span>
+      </div>
+    `;
+  }).join('');
+  
+  document.getElementById('leaderboardContent').innerHTML = html || '<p>No creators yet</p>';
+  document.getElementById('leaderboardModal').classList.remove('hidden');
+}
+
+function showQuickActions() {
+  document.getElementById('quickActionsModal').classList.remove('hidden');
+}
+
+function quickConvertNew() {
+  const newBookings = allBookings.filter(b => b.status === 'new');
+  if (newBookings.length === 0) {
+    showToast('No new bookings', 'info');
+    return;
+  }
+  
+  if (!confirm(`Mark ${newBookings.length} NEW bookings as CONVERTED?`)) return;
+  
+  showLoading();
+  const promises = newBookings.map(b => 
+    fetch(WEB_APP_URL, {
+      method: 'POST',
+      body: JSON.stringify({
+        action: 'updateBooking',
+        id: b.id,
+        status: 'converted',
+        finalPrice: b.finalPrice,
+        notes: b.notes || ''
+      })
+    })
+  );
+  
+  Promise.all(promises).then(() => {
+    hideLoading();
+    showToast('All new bookings converted!', 'success');
+    loadBookings();
+    loadStats();
+  });
+}
+
+function quickContactNew() {
+  const newBookings = allBookings.filter(b => b.status === 'new');
+  if (newBookings.length === 0) {
+    showToast('No new bookings', 'info');
+    return;
+  }
+  
+  if (!confirm(`Mark ${newBookings.length} NEW bookings as CONTACTED?`)) return;
+  
+  showLoading();
+  const promises = newBookings.map(b => 
+    fetch(WEB_APP_URL, {
+      method: 'POST',
+      body: JSON.stringify({
+        action: 'updateBooking',
+        id: b.id,
+        status: 'contacted',
+        finalPrice: b.finalPrice,
+        notes: b.notes || ''
+      })
+    })
+  );
+  
+  Promise.all(promises).then(() => {
+    hideLoading();
+    showToast('All new bookings marked as contacted!', 'success');
+    loadBookings();
+    loadStats();
+  });
+}
+
+function findDuplicates() {
+  const phoneMap = {};
+  allBookings.forEach(b => {
+    if (!phoneMap[b.phone]) phoneMap[b.phone] = [];
+    phoneMap[b.phone].push(b);
+  });
+  
+  const duplicates = Object.values(phoneMap).filter(arr => arr.length > 1);
+  
+  if (duplicates.length === 0) {
+    showToast('No duplicate customers found', 'info');
+  } else {
+    const msg = `Found ${duplicates.length} customers with multiple bookings:\n` + 
+                duplicates.map(d => `${d[0].name}: ${d.length} bookings`).join('\n');
+    alert(msg);
+  }
+}
+
+function showLostReasons() {
+  const lostBookings = allBookings.filter(b => b.status === 'lost');
+  if (lostBookings.length === 0) {
+    showToast('No lost bookings', 'info');
+    return;
+  }
+  
+  const reasons = lostBookings.map(b => b.notes || 'No reason given').join('\n---\n');
+  alert(`Lost Reasons (${lostBookings.length} bookings):\n\n${reasons}`);
+}
+
+function calculateROI() {
+  const revenue = allBookings.filter(b => b.status === 'converted').reduce((sum, b) => sum + b.finalPrice, 0);
+  const creatorPayouts = allCreators.reduce((sum, c) => sum + c.earnings, 0);
+  const roi = revenue > 0 ? (((revenue - creatorPayouts) / revenue) * 100).toFixed(1) : 0;
+  
+  alert(`ROI Analysis:\nTotal Revenue: ₹${revenue}\nCreator Payouts: ₹${creatorPayouts}\nNet Profit: ₹${revenue - creatorPayouts}\nROI: ${roi}%`);
+}
+
+function predictRevenue() {
+  const thisMonth = allBookings.filter(b => {
+    const d = new Date(b.date);
+    const now = new Date();
+    return d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear() && b.status === 'converted';
+  });
+  
+  const revenue = thisMonth.reduce((sum, b) => sum + b.finalPrice, 0);
+  const daysInMonth = new Date(new Date().getFullYear(), new Date().getMonth() + 1, 0).getDate();
+  const currentDay = new Date().getDate();
+  const predicted = Math.round((revenue / currentDay) * daysInMonth);
+  
+  alert(`Revenue Prediction:\nCurrent Month Revenue: ₹${revenue}\nDays Passed: ${currentDay}/${daysInMonth}\nPredicted Month End: ₹${predicted}`);
+}
+
+function sendBulkSMS() {
+  if (selectedBookings.size === 0) {
+    showToast('Select bookings first', 'error');
+    return;
+  }
+  
+  const selected = allBookings.filter(b => selectedBookings.has(b.id));
+  const recipients = selected.map(b => `${b.name} (${b.phone})`).join(', ');
+  document.getElementById('smsRecipients').innerHTML = `<strong>Recipients (${selected.length}):</strong><br>${recipients}`;
+  document.getElementById('smsMessage').value = '';
+  document.getElementById('smsCharCount').textContent = '0';
+  document.getElementById('smsCost').textContent = '0';
+  document.getElementById('smsModal').classList.remove('hidden');
+}
+
+function loadSMSTemplate() {
+  const template = document.getElementById('smsTemplate').value;
+  const templates = {
+    welcome: 'Hi {name}! Welcome to our service. Your booking #{id} is confirmed. We\'ll contact you soon!',
+    followup: 'Hi {name}! Following up on your booking #{id}. Please let us know if you have any questions.',
+    discount: 'Hi {name}! Special offer - Get 20% off on your next booking! Use code: SAVE20',
+    reminder: 'Hi {name}! Friendly reminder about your booking #{id}. Payment pending: ₹{amount}'
+  };
+  
+  if (template && templates[template]) {
+    document.getElementById('smsMessage').value = templates[template];
+    updateSMSCount();
+  }
+}
+
+function updateSMSCount() {
+  const msg = document.getElementById('smsMessage').value;
+  const count = msg.length;
+  const cost = Math.ceil(count / 160) * selectedBookings.size * 0.25;
+  document.getElementById('smsCharCount').textContent = count;
+  document.getElementById('smsCost').textContent = cost.toFixed(2);
+}
+
+document.getElementById('smsMessage')?.addEventListener('input', updateSMSCount);
+
+function sendSMS() {
+  const msg = document.getElementById('smsMessage').value.trim();
+  if (!msg) {
+    showToast('Enter message', 'error');
+    return;
+  }
+  
+  const selected = allBookings.filter(b => selectedBookings.has(b.id));
+  const messages = selected.map(b => {
+    return msg.replace('{name}', b.name)
+              .replace('{id}', b.id)
+              .replace('{amount}', b.finalPrice);
+  });
+  
+  alert(`SMS Simulation:\n\nWould send ${messages.length} messages.\n\nFirst message preview:\n"${messages[0]}"\n\nNote: Actual SMS integration required for real sending.`);
+  showToast('SMS simulated (integration needed)', 'info');
+  closeModal('smsModal');
+}
+
+function sendWelcomeSMS() {
+  const newBookings = allBookings.filter(b => b.status === 'new');
+  if (newBookings.length === 0) {
+    showToast('No new bookings to welcome', 'info');
+    return;
+  }
+  
+  alert(`Would send welcome SMS to ${newBookings.length} new customers.\n\nNote: SMS integration required.`);
+  showToast('Welcome SMS simulated', 'info');
+}
+
+function sendFollowUpSMS() {
+  const contacted = allBookings.filter(b => b.status === 'contacted');
+  if (contacted.length === 0) {
+    showToast('No contacted bookings', 'info');
+    return;
+  }
+  
+  alert(`Would send follow-up SMS to ${contacted.length} contacted customers.\n\nNote: SMS integration required.`);
+  showToast('Follow-up SMS simulated', 'info');
+}
+
+function exportData() {
+  const csv = ['ID,Date,Name,Phone,Service,Quantity,FinalPrice,Status,Coupon'];
+  allBookings.forEach(b => {
+    csv.push(`${b.id},${b.date},${b.name},${b.phone},${b.service},${b.quantity},${b.finalPrice},${b.status},${b.coupon || ''}`);
+  });
+  
+  const blob = new Blob([csv.join('\n')], {type: 'text/csv'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `bookings_${new Date().toISOString().split('T')[0]}.csv`;
+  a.click();
+  showToast('Export completed!', 'success');
+}
+
+function exportSelected() {
+  if (selectedBookings.size === 0) {
+    showToast('Select bookings first', 'error');
+    return;
+  }
+  
+  const selected = allBookings.filter(b => selectedBookings.has(b.id));
+  const csv = ['ID,Date,Name,Phone,Service,Quantity,FinalPrice,Status,Coupon'];
+  selected.forEach(b => {
+    csv.push(`${b.id},${b.date},${b.name},${b.phone},${b.service},${b.quantity},${b.finalPrice},${b.status},${b.coupon || ''}`);
+  });
+  
+  const blob = new Blob([csv.join('\n')], {type: 'text/csv'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `selected_bookings_${new Date().toISOString().split('T')[0]}.csv`;
+  a.click();
+  showToast('Selected bookings exported!', 'success');
+}
+
+function showConversionRate() {
+  const total = allBookings.length;
+  const converted = allBookings.filter(b => b.status === 'converted').length;
+  const contacted = allBookings.filter(b => b.status === 'contacted').length;
+  const lost = allBookings.filter(b => b.status === 'lost').length;
+  
+  const convRate = total > 0 ? ((converted / total) * 100).toFixed(1) : 0;
+  const contactedRate = contacted > 0 ? ((converted / contacted) * 100).toFixed(1) : 0;
+  
+  alert(`Conversion Analysis:\n\nOverall Conversion: ${convRate}%\n(${converted}/${total} bookings)\n\nContacted → Converted: ${contactedRate}%\n(${converted}/${contacted} contacted)\n\nLost Rate: ${((lost/total)*100).toFixed(1)}%`);
+}
+
+function showAvgDeal() {
+  const converted = allBookings.filter(b => b.status === 'converted');
+  if (converted.length === 0) {
+    alert('No converted bookings yet');
+    return;
+  }
+  
+  const total = converted.reduce((sum, b) => sum + b.finalPrice, 0);
+  const avg = Math.round(total / converted.length);
+  const max = Math.max(...converted.map(b => b.finalPrice));
+  const min = Math.min(...converted.map(b => b.finalPrice));
+  
+  alert(`Deal Size Analysis:\n\nAverage: ₹${avg}\nHighest: ₹${max}\nLowest: ₹${min}\nTotal Deals: ${converted.length}`);
+}
+
+function showTopPerformer() {
+  if (allCreators.length === 0) {
+    alert('No creators yet');
+    return;
+  }
+  
+  const top = allCreators.reduce((max, c) => c.conversions > max.conversions ? c : max, allCreators[0]);
+  const convRate = top.views > 0 ? ((top.conversions / top.views) * 100).toFixed(1) : 0;
+  
+  alert(`Top Performer:\n\n${top.name}\nConversions: ${top.conversions}\nViews: ${top.views}\nConversion Rate: ${convRate}%\nEarnings: ₹${top.earnings}`);
+}
+
+function showTab(tab) {
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  event.target.classList.add('active');
+  
+  document.getElementById('bookingsTab').classList.add('hidden');
+  document.getElementById('creatorsTab').classList.add('hidden');
+  document.getElementById('couponsTab').classList.add('hidden');
+  document.getElementById('analyticsTab').classList.add('hidden');
+  document.getElementById('followupTab').classList.add('hidden');
+  
+  if (tab === 'bookings') {
+    document.getElementById('bookingsTab').classList.remove('hidden');
+    loadBookings();
+  } else if (tab === 'creators') {
+    document.getElementById('creatorsTab').classList.remove('hidden');
+    loadCreators();
+  } else if (tab === 'coupons') {
+    document.getElementById('couponsTab').classList.remove('hidden');
+    loadCoupons();
+  } else if (tab === 'analytics') {
+    document.getElementById('analyticsTab').classList.remove('hidden');
+    loadAnalytics();
+  } else if (tab === 'followup') {
+    document.getElementById('followupTab').classList.remove('hidden');
+    loadReminders();
+  }
+}
+
+function loadAnalytics() {
+  // Revenue trend chart
+  const last7Days = [];
+  for (let i = 6; i >= 0; i--) {
+    const d = new Date();
+    d.setDate(d.getDate() - i);
+    last7Days.push(d.toLocaleDateString('en-US', {month: 'short', day: 'numeric'}));
+  }
+  
+  const revenueData = last7Days.map((day, i) => {
+    const date = new Date();
+    date.setDate(date.getDate() - (6 - i));
+    const dayBookings = allBookings.filter(b => {
+      const bDate = new Date(b.date);
+      return bDate.toDateString() === date.toDateString() && b.status === 'converted';
+    });
+    return dayBookings.reduce((sum, b) => sum + b.finalPrice, 0);
+  });
+  
+  const ctx1 = document.getElementById('revenueChart').getContext('2d');
+  new Chart(ctx1, {
+    type: 'line',
+    data: {
+      labels: last7Days,
+      datasets: [{
+        label: 'Revenue',
+        data: revenueData,
+        borderColor: '#4a9eff',
+        backgroundColor: 'rgba(74, 158, 255, 0.1)',
+        tension: 0.4
+      }]
+    },
+    options: {
+      responsive: true,
+      plugins: {legend: {display: false}},
+      scales: {y: {beginAtZero: true}}
+    }
+  });
+  
+  // Service popularity
+  const serviceMap = {};
+  allBookings.forEach(b => {
+    serviceMap[b.service] = (serviceMap[b.service] || 0) + 1;
+  });
+  
+  const ctx2 = document.getElementById('serviceChart').getContext('2d');
+  new Chart(ctx2, {
+    type: 'bar',
+    data: {
+      labels: Object.keys(serviceMap),
+      datasets: [{
+        label: 'Bookings',
+        data: Object.values(serviceMap),
+        backgroundColor: '#0f0'
+      }]
+    },
+    options: {
+      responsive: true,
+      plugins: {legend: {display: false}}
+    }
+  });
+  
+  // Status breakdown
+  const statusData = {
+    new: allBookings.filter(b => b.status === 'new').length,
+    contacted: allBookings.filter(b => b.status === 'contacted').length,
+    converted: allBookings.filter(b => b.status === 'converted').length,
+    lost: allBookings.filter(b => b.status === 'lost').length
+  };
+  
+  const ctx3 = document.getElementById('statusChart').getContext('2d');
+  new Chart(ctx3, {
+    type: 'doughnut',
+    data: {
+      labels: ['New', 'Contacted', 'Converted', 'Lost'],
+      datasets: [{
+        data: Object.values(statusData),
+        backgroundColor: ['#ff0', '#4a9eff', '#0f0', '#f00']
+      }]
+    },
+    options: {responsive: true}
+  });
+  
+  // Coupon performance
+  const topCoupons = [...allCoupons].sort((a, b) => b.uses - a.uses).slice(0, 5);
+  const html = topCoupons.map((c, i) => 
+    `<div style="padding:10px;background:#0a0a0a;margin-bottom:5px;border-left:3px solid #0f0">
+      <strong>#${i+1} ${c.code}</strong> - ${c.uses} uses (${c.discount}% off)
+    </div>`
+  ).join('');
+  document.getElementById('couponPerformance').innerHTML = html || '<p>No coupon data</p>';
+}
+
+function generateReport() {
+  const report = `
+BUSINESS REPORT
+Generated: ${new Date().toLocaleString()}
+
+SUMMARY:
+- Total Bookings: ${allBookings.length}
+- Converted: ${allBookings.filter(b => b.status === 'converted').length}
+- Revenue: ₹${allBookings.filter(b => b.status === 'converted').reduce((s, b) => s + b.finalPrice, 0)}
+- Conversion Rate: ${(allBookings.filter(b => b.status === 'converted').length / allBookings.length * 100).toFixed(1)}%
+
+CREATORS:
+- Total Creators: ${allCreators.length}
+- Total Earnings: ₹${allCreators.reduce((s, c) => s + c.earnings, 0)}
+- Pending Payouts: ₹${allCreators.reduce((s, c) => s + c.pending, 0)}
+
+COUPONS:
+- Total Coupons: ${allCoupons.length}
+- Total Uses: ${allCoupons.reduce((s, c) => s + c.uses, 0)}
+  `;
+  
+  const blob = new Blob([report], {type: 'text/plain'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `business_report_${new Date().toISOString().split('T')[0]}.txt`;
+  a.click();
+  showToast('Report downloaded!', 'success');
+}
+
+function showAddReminder() {
+  const select = document.getElementById('reminderBooking');
+  select.innerHTML = '<option value="">Select Customer</option>' + 
+    allBookings.filter(b => b.status !== 'converted' && b.status !== 'lost')
+      .map(b => `<option value="${b.id}">${b.name} - ${b.phone}</option>`).join('');
+  
+  document.getElementById('reminderModal').classList.remove('hidden');
+}
+
+function saveReminder() {
+  const bookingId = document.getElementById('reminderBooking').value;
+  const date = document.getElementById('reminderDate').value;
+  const note = document.getElementById('reminderNote').value.trim();
+  
+  if (!bookingId || !date) {
+    showToast('Fill all fields', 'error');
+    return;
+  }
+  
+  const booking = allBookings.find(b => b.id === bookingId);
+  const reminder = {
+    id: 'R' + Date.now(),
+    bookingId: bookingId,
+    customerName: booking.name,
+    customerPhone: booking.phone,
+    date: date,
+    note: note,
+    completed: false
+  };
+  
+  reminders.push(reminder);
+  showToast('Reminder added!', 'success');
+  closeModal('reminderModal');
+  displayReminders();
+}
+
+function loadReminders() {
+  displayReminders();
+}
+
+function displayReminders() {
+  const now = new Date();
+  const upcoming = reminders.filter(r => !r.completed && new Date(r.date) > now);
+  const overdue = reminders.filter(r => !r.completed && new Date(r.date) <= now);
+  const completed = reminders.filter(r => r.completed);
+  
+  let html = '';
+  
+  if (overdue.length > 0) {
+    html += '<div class="section-title" style="color:#f00">🔴 OVERDUE</div>';
+    html += overdue.map(r => `
+      <div style="padding:15px;margin-bottom:10px;background:#3a1a1a;border:1px solid #f00">
+        <strong>${r.customerName}</strong> - ${r.customerPhone}<br>
+        <span style="color:#888">Due: ${new Date(r.date).toLocaleString()}</span><br>
+        <span style="color:#ccc">${r.note}</span><br>
+        <div style="margin-top:10px">
+          <button onclick="completeReminder('${r.id}')" class="primary">MARK DONE</button>
+          <button onclick="deleteReminder('${r.id}')" class="danger">DELETE</button>
+        </div>
+      </div>
+    `).join('');
+  }
+  
+  if (upcoming.length > 0) {
+    html += '<div class="section-title" style="color:#0f0;margin-top:20px">🟢 UPCOMING</div>';
+    html += upcoming.map(r => `
+      <div style="padding:15px;margin-bottom:10px;background:#1a3a1a;border:1px solid #0f0">
+        <strong>${r.customerName}</strong> - ${r.customerPhone}<br>
+        <span style="color:#888">Due: ${new Date(r.date).toLocaleString()}</span><br>
+        <span style="color:#ccc">${r.note}</span><br>
+        <div style="margin-top:10px">
+          <button onclick="completeReminder('${r.id}')" class="primary">MARK DONE</button>
+          <button onclick="deleteReminder('${r.id}')" class="danger">DELETE</button>
+        </div>
+      </div>
+    `).join('');
+  }
+  
+  if (completed.length > 0) {
+    html += '<div class="section-title" style="color:#888;margin-top:20px">✓ COMPLETED</div>';
+    html += completed.map(r => `
+      <div style="padding:15px;margin-bottom:10px;background:#0a0a0a;border:1px solid #333;opacity:0.6">
+        <strong>${r.customerName}</strong> - ${r.customerPhone}<br>
+        <span style="color:#888">${r.note}</span><br>
+        <button onclick="deleteReminder('${r.id}')" class="danger" style="margin-top:10px">DELETE</button>
+      </div>
+    `).join('');
+  }
+  
+  if (html === '') {
+    html = '<p style="color:#888">No reminders. Click "ADD REMINDER" to create one.</p>';
+  }
+  
+  document.getElementById('remindersList').innerHTML = html;
+}
+
+function completeReminder(id) {
+  const reminder = reminders.find(r => r.id === id);
+  if (reminder) {
+    reminder.completed = true;
+    showToast('Reminder completed!', 'success');
+    displayReminders();
+  }
+}
+
+function deleteReminder(id) {
+  if (!confirm('Delete this reminder?')) return;
+  reminders = reminders.filter(r => r.id !== id);
+  showToast('Reminder deleted', 'success');
+  displayReminders();
+}
+
+function closeModal(id) {
+  document.getElementById(id).classList.add('hidden');
+  if (id === 'editModal') {
+    currentBookingForCreator = null;
+  }
+}
+
+function showLoading() {
+  document.getElementById('loadingOverlay').classList.remove('hidden');
+}
+
+function hideLoading() {
+  document.getElementById('loadingOverlay').classList.add('hidden');
+}
+
+function showToast(msg, type = 'info') {
+  const toast = document.createElement('div');
+  toast.className = `toast ${type}`;
+  toast.textContent = msg;
+  document.body.appendChild(toast);
+  setTimeout(() => toast.remove(), 3000);
 }
 </script>
 </body>

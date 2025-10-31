@@ -4,80 +4,385 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Creator Dashboard</title>
+<link rel="stylesheet" href="main.css">
 <style>
-*{margin:0;padding:0;box-sizing:border-box}
-body{font-family:'Segoe UI',system-ui,sans-serif;background:#000;color:#fff;line-height:1.6}
-.container{max-width:1200px;margin:0 auto;padding:20px}
-h1{font-family:'Playfair Display',serif;font-size:2.2em;margin-bottom:30px;letter-spacing:2px}
-.login-section{max-width:400px;margin:50px auto;background:#111;border:1px solid #333;padding:30px}
-.login-section input{width:100%;padding:12px;background:#000;border:1px solid #444;color:#fff;margin-bottom:15px}
-.login-section button{width:100%;padding:12px;background:#fff;color:#000;border:none;font-weight:700;cursor:pointer}
-.stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:20px;margin-bottom:30px}
-.stat-card{background:#111;border:1px solid #333;padding:25px}
-.stat-value{font-size:2.5em;font-weight:700;margin:10px 0}
-.stat-label{color:#888;font-size:0.9em;text-transform:uppercase;letter-spacing:1px}
-.highlight{color:#4a9eff}
-.success{color:#0f0}
-.section{background:#111;border:1px solid #333;padding:25px;margin-bottom:20px}
-.section-title{font-size:1.3em;margin-bottom:20px;border-bottom:1px solid #333;padding-bottom:10px}
-table{width:100%;border-collapse:collapse}
-th,td{text-align:left;padding:12px;border-bottom:1px solid #222}
-th{background:#0a0a0a;font-weight:600;font-size:0.9em;color:#888}
-.status-pending{color:#ff9500}
-.status-verified{color:#0f0}
-.status-paid{color:#4a9eff}
-.code-box{background:#000;border:2px solid #4a9eff;padding:20px;text-align:center;margin:20px 0}
-.code-display{font-size:2em;font-weight:700;letter-spacing:3px;margin:10px 0}
-button.secondary{background:#222;color:#fff;border:1px solid #444;padding:10px 20px;cursor:pointer;margin-top:10px}
-button.secondary:hover{background:#333}
-.video-link{color:#4a9eff;text-decoration:none}
-.video-link:hover{text-decoration:underline}
-.hidden{display:none}
-.info-box{background:#1a1a1a;border-left:3px solid #4a9eff;padding:15px;margin:15px 0;font-size:0.9em}
+/* New Feature Styles */
+.feature-card {
+  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+  border: 1px solid #4a9eff;
+  border-radius: 8px;
+  padding: 20px;
+  margin-bottom: 15px;
+}
+
+.feature-card h3 {
+  color: #4a9eff;
+  margin: 0 0 10px 0;
+  font-size: 1.1em;
+}
+
+.progress-bar {
+  background: #0a0a0a;
+  height: 25px;
+  border-radius: 12px;
+  overflow: hidden;
+  position: relative;
+  margin: 10px 0;
+}
+
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #4a9eff, #0066cc);
+  transition: width 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.85em;
+  font-weight: bold;
+}
+
+.milestone-badge {
+  display: inline-block;
+  padding: 5px 12px;
+  background: linear-gradient(135deg, #ffd700, #ffaa00);
+  color: #000;
+  border-radius: 20px;
+  font-weight: bold;
+  font-size: 0.85em;
+  margin: 5px;
+}
+
+.leaderboard-rank {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  padding: 12px;
+  background: #0a0a0a;
+  border: 1px solid #333;
+  border-radius: 6px;
+  margin: 8px 0;
+}
+
+.rank-number {
+  font-size: 1.5em;
+  font-weight: bold;
+  color: #4a9eff;
+  min-width: 40px;
+}
+
+.share-btn {
+  background: linear-gradient(135deg, #25d366, #128c7e);
+  color: white;
+  border: none;
+  padding: 12px 20px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: bold;
+  margin: 5px;
+}
+
+.share-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(37, 211, 102, 0.4);
+}
+
+.qr-container {
+  background: white;
+  padding: 20px;
+  border-radius: 8px;
+  display: inline-block;
+  margin: 15px 0;
+}
+
+.chart-container {
+  background: #0a0a0a;
+  border: 1px solid #333;
+  border-radius: 8px;
+  padding: 20px;
+  margin: 15px 0;
+  min-height: 200px;
+}
+
+.notification-badge {
+  background: #ff4444;
+  color: white;
+  border-radius: 12px;
+  padding: 2px 8px;
+  font-size: 0.75em;
+  font-weight: bold;
+  margin-left: 8px;
+}
+
+.achievement-unlock {
+  background: linear-gradient(135deg, #ffd700, #ff6b00);
+  color: #000;
+  padding: 15px;
+  border-radius: 8px;
+  margin: 10px 0;
+  font-weight: bold;
+  text-align: center;
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+}
+
+.tip-card {
+  background: linear-gradient(135deg, #1a4d2e, #0f3a20);
+  border-left: 4px solid #4ade80;
+  padding: 15px;
+  margin: 10px 0;
+  border-radius: 4px;
+}
+
+.referral-link-box {
+  background: #0a0a0a;
+  border: 2px dashed #4a9eff;
+  padding: 15px;
+  border-radius: 8px;
+  margin: 15px 0;
+  text-align: center;
+}
+
+.referral-link-box input {
+  background: #1a1a1a;
+  border: 1px solid #4a9eff;
+  color: white;
+  padding: 12px;
+  border-radius: 6px;
+  width: 100%;
+  font-size: 0.95em;
+  margin: 10px 0;
+}
+
+.tier-badge {
+  display: inline-block;
+  padding: 8px 16px;
+  border-radius: 20px;
+  font-weight: bold;
+  font-size: 0.9em;
+  margin-left: 10px;
+}
+
+.tier-bronze { background: linear-gradient(135deg, #cd7f32, #8b4513); }
+.tier-silver { background: linear-gradient(135deg, #c0c0c0, #808080); }
+.tier-gold { background: linear-gradient(135deg, #ffd700, #ff6b00); }
+.tier-platinum { background: linear-gradient(135deg, #e5e4e2, #b4b4b4); }
+
+.comparison-stat {
+  display: flex;
+  justify-content: space-between;
+  padding: 10px;
+  border-bottom: 1px solid #333;
+}
+
+.comparison-stat:last-child {
+  border-bottom: none;
+}
+
+.trending-up {
+  color: #4ade80;
+  font-weight: bold;
+}
+
+.trending-down {
+  color: #ff4444;
+  font-weight: bold;
+}
+
+.quick-action-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 10px;
+  margin: 15px 0;
+}
+
+.quick-action {
+  background: #1a1a1a;
+  border: 1px solid #4a9eff;
+  padding: 20px;
+  border-radius: 8px;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.quick-action:hover {
+  transform: translateY(-5px);
+  border-color: #6bb6ff;
+  box-shadow: 0 5px 15px rgba(74, 158, 255, 0.3);
+}
+
+.quick-action-icon {
+  font-size: 2em;
+  margin-bottom: 10px;
+}
 </style>
 </head>
 <body>
 <div class="container">
-<div id="loginSection" class="login-section">
-<h1 style="font-size:1.8em;text-align:center;margin-bottom:20px">CREATOR LOGIN</h1>
-<input type="text" id="loginPhone" placeholder="Phone Number">
-<input type="text" id="loginCode" placeholder="Creator Code">
+<div id="loginSection" class="section" style="max-width:400px;margin:50px auto">
+<h1 class="text-center">CREATOR LOGIN</h1>
+<input type="tel" id="loginPhone" placeholder="Phone Number">
 <button onclick="login()">LOGIN</button>
+<p style="color:#666;text-align:center;margin-top:15px;font-size:0.9em">
+Don't have an account? Apply when booking a service!
+</p>
 </div>
 
 <div id="dashboard" class="hidden">
-<h1>CREATOR DASHBOARD</h1>
-<div id="creatorInfo"></div>
-
-<div class="code-box">
-<div style="font-size:0.9em;color:#888">YOUR CREATOR CODE</div>
-<div class="code-display" id="displayCode"></div>
-<button class="secondary" onclick="copyCode()">COPY CODE</button>
+<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px">
+<div>
+<h1 style="margin:0">CREATOR DASHBOARD</h1>
+<p style="color:#888;margin:5px 0" id="creatorName"></p>
+<span id="tierBadge"></span>
+</div>
+<button onclick="logout()" class="secondary">LOGOUT</button>
 </div>
 
-<div class="stats-grid">
-<div class="stat-card">
-<div class="stat-label">Total Views</div>
-<div class="stat-value highlight" id="totalViews">0</div>
-</div>
-<div class="stat-card">
-<div class="stat-label">Conversions</div>
-<div class="stat-value success" id="totalConversions">0</div>
-<div style="color:#666;font-size:0.8em;margin-top:5px">Conversion Rate: <span id="convRate">0%</span></div>
-</div>
-<div class="stat-card">
-<div class="stat-label">Total Earnings</div>
-<div class="stat-value success" id="totalEarnings">₹0</div>
-</div>
-<div class="stat-card">
-<div class="stat-label">Pending Payout</div>
-<div class="stat-value" id="pendingPayout">₹0</div>
-</div>
-</div>
-
+<!-- FEATURE 1: Performance Overview with Progress Bars -->
 <div class="section">
-<div class="section-title">REFERRAL ACTIVITY</div>
-<table id="referralTable">
+<div class="section-title">🎯 Performance Overview</div>
+<div class="feature-card">
+<h3>Monthly Goal Progress</h3>
+<div>
+<div style="display:flex;justify-content:space-between;margin-bottom:5px">
+<span>Conversions</span>
+<span id="goalConversions">0/10</span>
+</div>
+<div class="progress-bar">
+<div class="progress-fill" id="goalProgress" style="width:0%">0%</div>
+</div>
+</div>
+<div style="margin-top:15px">
+<div style="display:flex;justify-content:space-between;margin-bottom:5px">
+<span>Earnings Goal</span>
+<span id="goalEarnings">₹0/₹5000</span>
+</div>
+<div class="progress-bar">
+<div class="progress-fill" id="earningsProgress" style="width:0%">0%</div>
+</div>
+</div>
+</div>
+</div>
+
+<!-- FEATURE 2: Quick Actions Dashboard -->
+<div class="section">
+<div class="section-title">⚡ Quick Actions</div>
+<div class="quick-action-grid">
+<div class="quick-action" onclick="shareOnWhatsApp()">
+<div class="quick-action-icon">💬</div>
+<div>Share on WhatsApp</div>
+</div>
+<div class="quick-action" onclick="downloadQR()">
+<div class="quick-action-icon">📱</div>
+<div>Get QR Code</div>
+</div>
+<div class="quick-action" onclick="showReferralLink()">
+<div class="quick-action-icon">🔗</div>
+<div>Copy Link</div>
+</div>
+<div class="quick-action" onclick="viewAnalytics()">
+<div class="quick-action-icon">📊</div>
+<div>Analytics</div>
+</div>
+</div>
+</div>
+
+<!-- FEATURE 3: Real-time Stats Dashboard -->
+<div class="grid grid-2 mb-20">
+<div class="stat-card">
+<div class="stat-label">TOTAL VIEWS</div>
+<div class="stat-value status-new" id="totalViews">0</div>
+<div id="viewsTrend" style="font-size:0.85em;margin-top:5px"></div>
+</div>
+<div class="stat-card">
+<div class="stat-label">CONVERSIONS</div>
+<div class="stat-value status-converted" id="totalConversions">0</div>
+<div style="color:#666;font-size:0.85em;margin-top:5px">Rate: <span id="convRate">0%</span></div>
+</div>
+<div class="stat-card">
+<div class="stat-label">TOTAL EARNINGS</div>
+<div class="stat-value" id="totalEarnings">₹0</div>
+<div id="earningsTrend" style="font-size:0.85em;margin-top:5px"></div>
+</div>
+<div class="stat-card">
+<div class="stat-label">PENDING PAYOUT</div>
+<div class="stat-value status-contacted" id="pendingPayout">₹0</div>
+<button onclick="requestPayout()" class="primary" style="margin-top:10px;width:100%">REQUEST PAYOUT</button>
+</div>
+</div>
+
+<!-- FEATURE 4: Achievements & Milestones -->
+<div class="section">
+<div class="section-title">🏆 Achievements & Milestones</div>
+<div id="achievementsContainer"></div>
+<div style="margin-top:15px">
+<strong>Your Badges:</strong>
+<div id="badgesContainer" style="margin-top:10px"></div>
+</div>
+</div>
+
+<!-- FEATURE 5: Leaderboard -->
+<div class="section">
+<div class="section-title">🥇 Creator Leaderboard</div>
+<div id="leaderboardContainer">
+<p style="color:#666">Loading leaderboard...</p>
+</div>
+</div>
+
+<!-- FEATURE 6: Your Coupon Codes with Analytics -->
+<div class="section">
+<div class="section-title">💳 Your Coupon Codes</div>
+<div id="couponsDisplay"></div>
+</div>
+
+<!-- FEATURE 7: Performance Analytics Chart -->
+<div class="section">
+<div class="section-title">📈 Performance Analytics</div>
+<div class="chart-container" id="performanceChart">
+<canvas id="conversionChart" width="400" height="200"></canvas>
+</div>
+<div class="comparison-stat">
+<span>This Month vs Last Month</span>
+<span id="monthComparison">--</span>
+</div>
+<div class="comparison-stat">
+<span>Best Performing Day</span>
+<span id="bestDay">--</span>
+</div>
+<div class="comparison-stat">
+<span>Average Order Value</span>
+<span id="avgOrder">₹0</span>
+</div>
+</div>
+
+<!-- FEATURE 8: Marketing Tips & Best Practices -->
+<div class="section">
+<div class="section-title">💡 Marketing Tips</div>
+<div id="tipsContainer"></div>
+</div>
+
+<!-- FEATURE 9: Referral Activity with Filters -->
+<div class="section">
+<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:15px">
+<div class="section-title" style="margin:0">📋 REFERRAL ACTIVITY</div>
+<button onclick="loadStats()" class="secondary">REFRESH</button>
+</div>
+<div style="display:flex;gap:10px;margin-bottom:15px">
+<select id="statusFilter" onchange="filterReferrals()">
+<option value="">All Status</option>
+<option value="new">New</option>
+<option value="contacted">Contacted</option>
+<option value="converted">Converted</option>
+<option value="lost">Lost</option>
+</select>
+<input type="text" id="searchReferral" placeholder="Search customer" onkeyup="filterReferrals()" style="flex:1;margin:0">
+</div>
+<div style="max-height:400px;overflow-y:auto">
+<table>
 <thead>
 <tr>
 <th>Customer</th>
@@ -92,115 +397,505 @@ button.secondary:hover{background:#333}
 <tbody id="referralBody"></tbody>
 </table>
 </div>
+</div>
 
+<!-- FEATURE 10: Referral Link Generator -->
 <div class="section">
-<div class="section-title">CONTENT UPLOADS</div>
-<div class="info-box">Upload your content links to receive cashback. Cashback % depends on content quality and type.</div>
-<div id="uploadSection"></div>
+<div class="section-title">🔗 Your Referral Links</div>
+<div class="referral-link-box">
+<h3 style="color:#4a9eff;margin-top:0">Share Your Unique Link</h3>
+<input type="text" id="referralLink" readonly onclick="this.select()">
+<div style="display:flex;gap:10px;margin-top:10px;justify-content:center">
+<button class="share-btn" onclick="copyReferralLink()">📋 COPY LINK</button>
+<button class="share-btn" onclick="shareViaWhatsApp()">💬 WhatsApp</button>
+<button class="share-btn" style="background:linear-gradient(135deg, #405DE6, #E1306C)" onclick="shareViaInstagram()">📷 Instagram</button>
+</div>
+</div>
+<div id="qrCodeContainer" class="qr-container" style="text-align:center;display:none;">
+<div id="qrCode"></div>
+<p style="color:#000;margin-top:10px">Scan to book with your code</p>
+</div>
+</div>
+</div>
 </div>
 
-<button class="secondary" onclick="logout()" style="width:auto">LOGOUT</button>
-</div>
+<div id="loadingOverlay" class="loading-overlay hidden">
+<div class="loading"></div>
 </div>
 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 <script>
-const WEB_APP_URL='https://script.google.com/macros/s/AKfycbz2FBtwYXswBTPtoF5zhpo1QWUtVn4VhZ_r7_duDf4oafOvxG6z5BAxJbfFvzq2MlSaTQ/exec';
-let currentCreator=null;
+const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbwHJf1DA9D_itesCVkTtb0TeGFAorqnQ5hR1PdBDUVhXLVkk55IDW5hD2sLJPsPHsWkLQ/exec';
+let currentCreator = null;
+let allReferrals = [];
+let previousStats = null;
 
-function login(){
-const phone=document.getElementById('loginPhone').value.trim();
-const code=document.getElementById('loginCode').value.trim();
-if(!phone||!code){alert('Fill all fields');return}
-fetch(`${WEB_APP_URL}?action=creatorLogin&phone=${phone}&code=${code}`)
-.then(r=>r.json())
-.then(d=>{
-if(d.success){
-currentCreator=d.creator;
-showDashboard();
-}else alert('Invalid credentials');
-});
-}
+// Marketing tips database
+const marketingTips = [
+  "💡 Post your coupon code in your Instagram bio for maximum visibility",
+  "🎥 Create a quick video showcasing the service quality",
+  "⏰ Share during peak hours (10 AM - 2 PM, 6 PM - 9 PM) for better engagement",
+  "👥 Tag friends who might be interested in the service",
+  "📸 Share before/after photos if applicable",
+  "🎯 Create urgency: 'Limited slots available this week!'",
+  "💬 Respond quickly to DMs asking about your code",
+  "🌟 Share customer testimonials and reviews",
+  "📊 Track which platform gives you most conversions",
+  "🎁 Announce special deals or combo offers"
+];
 
-function showDashboard(){
-document.getElementById('loginSection').classList.add('hidden');
-document.getElementById('dashboard').classList.remove('hidden');
-document.getElementById('displayCode').textContent=currentCreator.code;
-loadDashboardData();
-}
+// Achievement definitions
+const achievements = [
+  {id: 'first_conversion', name: 'First Sale', desc: 'Get your first conversion', icon: '🎉', requirement: 1},
+  {id: 'five_conversions', name: 'Rising Star', desc: 'Reach 5 conversions', icon: '⭐', requirement: 5},
+  {id: 'ten_conversions', name: 'Pro Creator', desc: 'Reach 10 conversions', icon: '🚀', requirement: 10},
+  {id: 'twenty_conversions', name: 'Super Creator', desc: 'Reach 20 conversions', icon: '💎', requirement: 20},
+  {id: 'hundred_views', name: 'Viral Star', desc: 'Get 100+ views', icon: '👀', requirement: 100},
+  {id: 'high_conversion', name: 'Conversion Master', desc: '20%+ conversion rate', icon: '🎯', requirement: 20}
+];
 
-function loadDashboardData(){
-fetch(`${WEB_APP_URL}?action=getCreatorStats&code=${currentCreator.code}`)
-.then(r=>r.json())
-.then(d=>{
-document.getElementById('totalViews').textContent=d.views||0;
-document.getElementById('totalConversions').textContent=d.conversions||0;
-document.getElementById('convRate').textContent=d.views>0?((d.conversions/d.views)*100).toFixed(1)+'%':'0%';
-document.getElementById('totalEarnings').textContent='₹'+(d.earnings||0);
-document.getElementById('pendingPayout').textContent='₹'+(d.pending||0);
-const tbody=document.getElementById('referralBody');
-tbody.innerHTML='';
-(d.referrals||[]).forEach(r=>{
-const tr=document.createElement('tr');
-tr.innerHTML=`
-<td>${r.name}</td>
-<td>${r.phone}</td>
-<td>${r.service}</td>
-<td>₹${r.amount}</td>
-<td>₹${r.commission}</td>
-<td class="status-${r.status.toLowerCase()}">${r.status}</td>
-<td>${r.date}</td>
-`;
-tbody.appendChild(tr);
-});
-const uploadSection=document.getElementById('uploadSection');
-uploadSection.innerHTML='';
-if(d.pendingUploads&&d.pendingUploads.length>0){
-d.pendingUploads.forEach(u=>{
-const div=document.createElement('div');
-div.style.cssText='background:#0a0a0a;border:1px solid #333;padding:15px;margin:10px 0';
-div.innerHTML=`
-<strong>Booking #${u.bookingId}</strong> - ₹${u.amount}<br>
-<input type="url" id="video_${u.bookingId}" placeholder="Video/Content URL" style="width:70%;padding:8px;background:#000;border:1px solid #444;color:#fff;margin:10px 10px 10px 0">
-<button onclick="submitContent('${u.bookingId}')" style="padding:8px 20px;background:#fff;color:#000;border:none;cursor:pointer">SUBMIT</button>
-`;
-uploadSection.appendChild(div);
-});
-}else{
-uploadSection.innerHTML='<p style="color:#666">No pending content uploads</p>';
-}
-});
+function login() {
+  const phone = document.getElementById('loginPhone').value.trim();
+  if (!phone) {
+    showToast('Enter phone number', 'error');
+    return;
+  }
+  
+  showLoading();
+  fetch(`${WEB_APP_URL}?action=creatorLogin&phone=${encodeURIComponent(phone)}`)
+    .then(r => r.json())
+    .then(d => {
+      hideLoading();
+      console.log('Login response:', d); // Debug log
+      if (d.success) {
+        currentCreator = d.creator;
+        showDashboard();
+        showToast('Login successful!', 'success');
+      } else {
+        showToast(d.error || 'Invalid phone or not approved as creator', 'error');
+      }
+    })
+    .catch(err => {
+      hideLoading();
+      console.error('Login error:', err);
+      showToast('Network error: ' + err.message, 'error');
+    });
 }
 
-function submitContent(bookingId){
-const url=document.getElementById(`video_${bookingId}`).value.trim();
-if(!url){alert('Enter video URL');return}
-fetch(WEB_APP_URL,{method:'POST',body:JSON.stringify({
-action:'submitContent',
-code:currentCreator.code,
-bookingId,
-videoUrl:url
-})})
-.then(r=>r.json())
-.then(d=>{
-if(d.success){
-alert('Content submitted for review!');
-loadDashboardData();
-}else alert('Error: '+d.message);
-});
+function showDashboard() {
+  document.getElementById('loginSection').classList.add('hidden');
+  document.getElementById('dashboard').classList.remove('hidden');
+  document.getElementById('creatorName').textContent = currentCreator.name;
+  loadStats();
+  displayMarketingTips();
+  generateReferralLink();
 }
 
-function copyCode(){
-navigator.clipboard.writeText(currentCreator.code);
-alert('Code copied!');
+function loadStats() {
+  showLoading();
+  fetch(`${WEB_APP_URL}?action=getCreatorStats&phone=${currentCreator.phone}`)
+    .then(r => r.json())
+    .then(d => {
+      hideLoading();
+      if (d.error) {
+        showToast('Error loading stats', 'error');
+        return;
+      }
+      
+      // Store previous stats for comparison
+      if (previousStats) {
+        calculateTrends(d);
+      }
+      previousStats = d;
+      
+      // Update main stats
+      document.getElementById('totalViews').textContent = d.views || 0;
+      document.getElementById('totalConversions').textContent = d.conversions || 0;
+      document.getElementById('convRate').textContent = d.views > 0 ? 
+        ((d.conversions / d.views) * 100).toFixed(1) + '%' : '0%';
+      document.getElementById('totalEarnings').textContent = '₹' + (d.earnings || 0);
+      document.getElementById('pendingPayout').textContent = '₹' + (d.pending || 0);
+      
+      // Update tier badge
+      updateTierBadge(d.conversions);
+      
+      // Update goal progress
+      updateGoalProgress(d.conversions, d.earnings);
+      
+      // Update achievements
+      updateAchievements(d);
+      
+      // Update analytics
+      updateAnalytics(d);
+      
+      // Display coupons
+      displayCoupons(d.coupons);
+      
+      // Display referrals
+      allReferrals = d.referrals || [];
+      filterReferrals();
+      
+      // Load leaderboard
+      loadLeaderboard();
+    })
+    .catch(() => {
+      hideLoading();
+      showToast('Network error', 'error');
+    });
 }
 
-function logout(){
-currentCreator=null;
-document.getElementById('loginSection').classList.remove('hidden');
-document.getElementById('dashboard').classList.add('hidden');
-document.getElementById('loginPhone').value='';
-document.getElementById('loginCode').value='';
+function updateTierBadge(conversions) {
+  let tier = 'Bronze';
+  let tierClass = 'tier-bronze';
+  
+  if (conversions >= 20) {
+    tier = 'Platinum';
+    tierClass = 'tier-platinum';
+  } else if (conversions >= 10) {
+    tier = 'Gold';
+    tierClass = 'tier-gold';
+  } else if (conversions >= 5) {
+    tier = 'Silver';
+    tierClass = 'tier-silver';
+  }
+  
+  document.getElementById('tierBadge').innerHTML = 
+    `<span class="tier-badge ${tierClass}">${tier} Creator</span>`;
 }
+
+function updateGoalProgress(conversions, earnings) {
+  const conversionGoal = 10;
+  const earningsGoal = 5000;
+  
+  const convPercent = Math.min((conversions / conversionGoal) * 100, 100);
+  const earnPercent = Math.min((earnings / earningsGoal) * 100, 100);
+  
+  document.getElementById('goalConversions').textContent = `${conversions}/${conversionGoal}`;
+  document.getElementById('goalProgress').style.width = convPercent + '%';
+  document.getElementById('goalProgress').textContent = convPercent.toFixed(0) + '%';
+  
+  document.getElementById('goalEarnings').textContent = `₹${earnings}/₹${earningsGoal}`;
+  document.getElementById('earningsProgress').style.width = earnPercent + '%';
+  document.getElementById('earningsProgress').textContent = earnPercent.toFixed(0) + '%';
+}
+
+function updateAchievements(stats) {
+  const container = document.getElementById('achievementsContainer');
+  const badgesContainer = document.getElementById('badgesContainer');
+  const conversionRate = stats.views > 0 ? (stats.conversions / stats.views) * 100 : 0;
+  
+  let unlockedAchievements = [];
+  let html = '';
+  let badgesHtml = '';
+  
+  achievements.forEach(ach => {
+    let unlocked = false;
+    
+    if (ach.id.includes('conversion') && !ach.id.includes('high')) {
+      unlocked = stats.conversions >= ach.requirement;
+    } else if (ach.id === 'hundred_views') {
+      unlocked = stats.views >= ach.requirement;
+    } else if (ach.id === 'high_conversion') {
+      unlocked = conversionRate >= ach.requirement;
+    }
+    
+    if (unlocked) {
+      unlockedAchievements.push(ach);
+      badgesHtml += `<span class="milestone-badge">${ach.icon} ${ach.name}</span>`;
+    }
+  });
+  
+  if (unlockedAchievements.length > 0) {
+    html = `<div class="achievement-unlock">
+      🎊 You've unlocked ${unlockedAchievements.length} achievement(s)! 🎊
+    </div>`;
+  } else {
+    html = '<p style="color:#666">Complete tasks to unlock achievements!</p>';
+  }
+  
+  container.innerHTML = html;
+  badgesContainer.innerHTML = badgesHtml || '<span style="color:#666">No badges yet</span>';
+}
+
+function calculateTrends(currentStats) {
+  const viewsTrend = currentStats.views - previousStats.views;
+  const earningsTrend = currentStats.earnings - previousStats.earnings;
+  
+  if (viewsTrend !== 0) {
+    const trendClass = viewsTrend > 0 ? 'trending-up' : 'trending-down';
+    const trendIcon = viewsTrend > 0 ? '↑' : '↓';
+    document.getElementById('viewsTrend').innerHTML = 
+      `<span class="${trendClass}">${trendIcon} ${Math.abs(viewsTrend)} since last refresh</span>`;
+  }
+  
+  if (earningsTrend !== 0) {
+    const trendClass = earningsTrend > 0 ? 'trending-up' : 'trending-down';
+    const trendIcon = earningsTrend > 0 ? '↑' : '↓';
+    document.getElementById('earningsTrend').innerHTML = 
+      `<span class="${trendClass}">${trendIcon} ₹${Math.abs(earningsTrend)} since last refresh</span>`;
+  }
+}
+
+function updateAnalytics(stats) {
+  // Calculate average order value
+  const avgOrder = stats.conversions > 0 ? (stats.earnings / (stats.conversions * 0.1)).toFixed(0) : 0;
+  document.getElementById('avgOrder').textContent = '₹' + avgOrder;
+  
+  // Mock data for this month vs last month
+  const growth = Math.floor(Math.random() * 50) + 10;
+  document.getElementById('monthComparison').innerHTML = 
+    `<span class="trending-up">↑ ${growth}%</span>`;
+  
+  // Best performing day (mock)
+  const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+  const bestDay = days[Math.floor(Math.random() * days.length)];
+  document.getElementById('bestDay').textContent = bestDay;
+}
+
+function displayCoupons(coupons) {
+  const couponsDiv = document.getElementById('couponsDisplay');
+  if (coupons && coupons.length > 0) {
+    couponsDiv.innerHTML = coupons.map(c => `
+      <div style="background:#0a0a0a;border:1px solid #4a9eff;padding:20px;margin-bottom:10px;border-radius:8px">
+        <div style="display:flex;justify-content:space-between;align-items:center">
+          <div style="flex:1">
+            <div style="font-size:1.5em;font-weight:700;letter-spacing:2px">${c.code}</div>
+            <div style="color:#888">${c.discount}% discount · Used ${c.uses} times</div>
+            <div style="margin-top:10px">
+              <div class="progress-bar" style="height:15px">
+                <div class="progress-fill" style="width:${Math.min(c.uses * 10, 100)}%;font-size:0.75em">
+                  ${c.uses} uses
+                </div>
+              </div>
+            </div>
+          </div>
+          <button onclick="copyCode('${c.code}')" class="primary">COPY</button>
+        </div>
+      </div>
+    `).join('');
+  } else {
+    couponsDiv.innerHTML = '<p style="color:#666">No coupons assigned yet. Contact admin.</p>';
+  }
+}
+
+function filterReferrals() {
+  const status = document.getElementById('statusFilter').value;
+  const search = document.getElementById('searchReferral').value.toLowerCase();
+  
+  const filtered = allReferrals.filter(r =>
+    (!status || r.status === status) &&
+    (!search || r.name.toLowerCase().includes(search) || r.phone.includes(search))
+  );
+  
+  const tbody = document.getElementById('referralBody');
+  if (filtered.length > 0) {
+    tbody.innerHTML = filtered.map(r => `
+      <tr>
+        <td>${r.name}</td>
+        <td>${r.phone}</td>
+        <td>${r.service}</td>
+        <td>₹${r.amount}</td>
+        <td>₹${r.commission}</td>
+        <td class="status-${r.status}">${r.status.toUpperCase()}</td>
+        <td style="font-size:0.8em">${r.date}</td>
+      </tr>
+    `).join('');
+  } else {
+    tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;color:#666">No referrals found</td></tr>';
+  }
+}
+
+function loadLeaderboard() {
+  fetch(`${WEB_APP_URL}?action=getAllCreators`)
+    .then(r => r.json())
+    .then(d => {
+      const creators = d.creators || [];
+      creators.sort((a, b) => b.conversions - a.conversions);
+      
+      const top5 = creators.slice(0, 5);
+      const currentRank = creators.findIndex(c => c.phone === currentCreator.phone) + 1;
+      
+      let html = '';
+      top5.forEach((creator, idx) => {
+        const isYou = creator.phone === currentCreator.phone;
+        html += `
+          <div class="leaderboard-rank" style="${isYou ? 'border:2px solid #4a9eff' : ''}">
+            <div class="rank-number">#${idx + 1}</div>
+            <div style="flex:1">
+              <div style="font-weight:bold">${creator.name} ${isYou ? '(You)' : ''}</div>
+              <div style="color:#888;font-size:0.9em">${creator.conversions} conversions · ₹${creator.earnings}</div>
+            </div>
+            <div style="color:#4a9eff;font-weight:bold">
+              ${['🥇', '🥈', '🥉', '🏅', '🏅'][idx]}
+            </div>
+          </div>
+        `;
+      });
+      
+      if (currentRank > 5) {
+        html += `<p style="text-align:center;color:#666;margin-top:15px">
+          Your rank: #${currentRank} out of ${creators.length} creators
+        </p>`;
+      }
+      
+      document.getElementById('leaderboardContainer').innerHTML = html;
+    })
+    .catch(() => {
+      document.getElementById('leaderboardContainer').innerHTML = 
+        '<p style="color:#666">Unable to load leaderboard</p>';
+    });
+}
+
+function displayMarketingTips() {
+  const tipsContainer = document.getElementById('tipsContainer');
+  const randomTips = marketingTips.sort(() => 0.5 - Math.random()).slice(0, 3);
+  
+  tipsContainer.innerHTML = randomTips.map(tip => `
+    <div class="tip-card">
+      ${tip}
+    </div>
+  `).join('');
+}
+
+function generateReferralLink() {
+  // Get first coupon code if available
+  fetch(`${WEB_APP_URL}?action=getCreatorStats&phone=${currentCreator.phone}`)
+    .then(r => r.json())
+    .then(d => {
+      if (d.coupons && d.coupons.length > 0) {
+        const couponCode = d.coupons[0].code;
+        const referralUrl = `${window.location.origin}/booking.html?ref=${couponCode}`;
+        document.getElementById('referralLink').value = referralUrl;
+        
+        // Generate QR code
+        document.getElementById('qrCode').innerHTML = '';
+        new QRCode(document.getElementById('qrCode'), {
+          text: referralUrl,
+          width: 200,
+          height: 200,
+          colorDark: "#000000",
+          colorLight: "#ffffff",
+        });
+      }
+    });
+}
+
+function copyCode(code) {
+  navigator.clipboard.writeText(code).then(() => {
+    showToast('Code copied: ' + code, 'success');
+  }).catch(() => {
+    showToast('Failed to copy', 'error');
+  });
+}
+
+function copyReferralLink() {
+  const link = document.getElementById('referralLink');
+  link.select();
+  navigator.clipboard.writeText(link.value).then(() => {
+    showToast('Referral link copied!', 'success');
+  }).catch(() => {
+    showToast('Failed to copy', 'error');
+  });
+}
+
+function shareOnWhatsApp() {
+  const link = document.getElementById('referralLink').value;
+  const message = encodeURIComponent(
+    `🎉 Hey! I'm partnering with an amazing service provider!\n\n` +
+    `Use my code and get a special discount! 💰\n\n` +
+    `Book here: ${link}\n\n` +
+    `Limited slots available!`
+  );
+  window.open(`https://wa.me/?text=${message}`, '_blank');
+}
+
+function shareViaWhatsApp() {
+  shareOnWhatsApp();
+}
+
+function shareViaInstagram() {
+  const link = document.getElementById('referralLink').value;
+  showToast('Copy your link and share it in your Instagram bio or stories!', 'info');
+  copyReferralLink();
+}
+
+function downloadQR() {
+  const qrContainer = document.getElementById('qrCodeContainer');
+  if (qrContainer.style.display === 'none') {
+    qrContainer.style.display = 'block';
+    showToast('QR Code generated! Right-click to save image', 'success');
+  } else {
+    qrContainer.style.display = 'none';
+  }
+}
+
+function showReferralLink() {
+  const link = document.getElementById('referralLink').value;
+  if (link) {
+    copyReferralLink();
+  } else {
+    showToast('Loading referral link...', 'info');
+    setTimeout(() => {
+      const link = document.getElementById('referralLink').value;
+      if (link) copyReferralLink();
+    }, 1000);
+  }
+}
+
+function viewAnalytics() {
+  document.getElementById('performanceChart').scrollIntoView({ behavior: 'smooth' });
+  showToast('Viewing your analytics', 'info');
+}
+
+function requestPayout() {
+  const pending = document.getElementById('pendingPayout').textContent;
+  if (pending === '₹0') {
+    showToast('No pending amount to payout', 'info');
+    return;
+  }
+  
+  const message = encodeURIComponent(
+    `Hi! I'm ${currentCreator.name} (${currentCreator.phone}).\n\n` +
+    `I would like to request a payout of ${pending}.\n\n` +
+    `Please process my payment. Thank you!`
+  );
+  
+  // Open WhatsApp with admin number (replace with actual admin number)
+  window.open(`https://wa.me/+919876543210?text=${message}`, '_blank');
+  showToast('Opening WhatsApp to contact admin', 'success');
+}
+
+function logout() {
+  currentCreator = null;
+  previousStats = null;
+  allReferrals = [];
+  document.getElementById('loginSection').classList.remove('hidden');
+  document.getElementById('dashboard').classList.add('hidden');
+  document.getElementById('loginPhone').value = '';
+}
+
+function showLoading() {
+  document.getElementById('loadingOverlay').classList.remove('hidden');
+}
+
+function hideLoading() {
+  document.getElementById('loadingOverlay').classList.add('hidden');
+}
+
+function showToast(msg, type = 'info') {
+  const toast = document.createElement('div');
+  toast.className = `toast ${type}`;
+  toast.textContent = msg;
+  document.body.appendChild(toast);
+  setTimeout(() => toast.remove(), 3000);
+}
+
+// Auto-refresh stats every 2 minutes
+setInterval(() => {
+  if (currentCreator) {
+    loadStats();
+  }
+}, 120000);
 </script>
 </body>
 </html>

@@ -3,245 +3,341 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Book Your Experience</title>
-<style>
-*{margin:0;padding:0;box-sizing:border-box}
-body{font-family:'Segoe UI',system-ui,sans-serif;background:#000;color:#fff;line-height:1.6}
-.container{max-width:600px;margin:0 auto;padding:20px}
-h1{font-family:'Playfair Display',serif;font-size:2.5em;margin-bottom:10px;letter-spacing:2px}
-.subtitle{color:#888;margin-bottom:30px;font-size:0.95em}
-.section{background:#111;border:1px solid #333;padding:25px;margin-bottom:20px}
-.section-title{font-size:1.1em;margin-bottom:15px;font-weight:600}
-label{display:block;margin:15px 0 5px;font-size:0.9em;color:#ccc}
-input[type="text"],input[type="tel"],input[type="number"],input[type="url"],select{width:100%;padding:12px;background:#000;border:1px solid #444;color:#fff;font-size:0.95em;outline:none}
-input:focus,select:focus{border-color:#fff}
-.creator-check{margin:20px 0}
-.creator-check input{width:auto;margin-right:8px}
-.creator-check label{display:inline;color:#4a9eff;cursor:pointer;font-weight:500}
-.platform-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:15px 0}
-.platform-card{background:#000;border:1px solid #444;padding:15px;text-align:center;cursor:pointer;transition:all 0.2s}
-.platform-card:hover{border-color:#fff}
-.platform-card.selected{background:#222;border-color:#4a9eff;color:#4a9eff}
-.platform-card span{display:block;font-size:1.2em;margin-bottom:5px}
-.cashback-info{background:#1a1a1a;border-left:3px solid #4a9eff;padding:15px;margin:15px 0}
-.cashback-info.active{border-color:#0f0}
-.price-display{font-size:1.8em;font-weight:700;margin:10px 0}
-.original{text-decoration:line-through;color:#666;font-size:0.7em;margin-right:10px}
-.savings{color:#0f0;font-size:0.65em}
-button{width:100%;padding:15px;background:#fff;color:#000;border:none;font-size:1.1em;font-weight:700;cursor:pointer;margin-top:20px;letter-spacing:1px}
-button:hover{background:#ddd}
-.hidden{display:none}
-.tc-link{text-align:center;margin-top:10px;font-size:0.75em}
-.tc-link a{color:#555;text-decoration:none}
-.coupon-section{background:#0a0a0a;border:2px solid #333;padding:20px;margin-bottom:25px}
-.coupon-input-wrapper{display:flex;gap:10px}
-.coupon-input-wrapper input{flex:1}
-.coupon-input-wrapper button{width:auto;padding:12px 25px;margin:0}
-.discount-msg{margin-top:10px;padding:10px;background:#1a3a1a;color:#0f0;text-align:center;font-weight:600}
-.error-msg{background:#3a1a1a;color:#f44}
-.handle-input{display:flex;align-items:center;margin-top:8px}
-.handle-input span{color:#888;margin-right:5px}
-.handle-input input{flex:1}
-</style>
+<title>Book Your Service</title>
+<link rel="stylesheet" href="main.css">
+<script src="https://cdn.jsdelivr.net/npm/lucide-static@0.16.29/font/lucide.js"></script>
 </head>
 <body>
-<div class="container">
-<h1>BOOK NOW</h1>
-<p class="subtitle">Premium experiences await</p>
+<div class="container" style="max-width:900px">
+<h1>BOOK YOUR SERVICE</h1>
 
-<div class="coupon-section">
-<div class="section-title">HAVE A COUPON CODE?</div>
-<div class="coupon-input-wrapper">
-<input type="text" id="couponCode" placeholder="Enter code">
-<button onclick="applyCoupon()">APPLY</button>
+<div class="section">
+<div class="section-title">Available Products</div>
+<div class="grid grid-3" id="productsGrid"></div>
 </div>
-<div id="couponMsg" class="hidden"></div>
+
+<div class="section" id="cartSection" style="display:none">
+<div class="section-title">Your Cart</div>
+<div id="cartItems"></div>
+<div style="text-align:right;margin-top:15px">
+<strong>Subtotal: ₹<span id="cartSubtotal">0</span></strong>
+</div>
 </div>
 
 <div class="section">
-<div class="section-title">BOOKING DETAILS</div>
+<div class="section-title">Have a Coupon?</div>
+<div style="display:flex;gap:10px">
+<input type="text" id="couponCode" placeholder="Enter code" style="margin:0">
+<button onclick="applyCoupon()" class="primary" style="width:auto">Apply</button>
+</div>
+<div id="couponMsg" style="margin-top:10px"></div>
+</div>
+
+<div class="section">
+<div class="section-title">Booking Details</div>
 <label>Full Name *</label>
 <input type="text" id="name" required>
 <label>Phone Number *</label>
 <input type="tel" id="phone" required>
-<label>Number of People *</label>
-<input type="number" id="numPeople" min="1" value="1">
 <label>Service Type *</label>
 <select id="serviceType">
-<option value="tour">Tour & Travel</option>
-<option value="car">Car Rental</option>
-<option value="course">Course Purchase</option>
-<option value="product">Product Purchase</option>
+<option value="Tour & Travel">Tour & Travel</option>
+<option value="Car Rental">Car Rental</option>
+<option value="Photography">Photography Session</option>
+<option value="Event Planning">Event Planning</option>
+<option value="Course">Online Course</option>
+<option value="Product">Product Purchase</option>
+<option value="Consultation">Consultation</option>
+<option value="Other">Other Service</option>
 </select>
 </div>
 
 <div class="section">
-<div class="section-title">SPECIAL CREATOR OFFER</div>
-<p style="color:#888;margin-bottom:15px">Are you a video creator, vlogger, or have good social media presence?</p>
-<div class="creator-check">
-<input type="checkbox" id="isCreator" onchange="toggleCreator()">
-<label for="isCreator">Yes, I'm a content creator</label>
-</div>
-<div id="creatorSection" class="hidden">
-<p style="color:#4a9eff;margin-bottom:15px;font-size:0.9em">★ Get 5% cashback + earn commission on every sale through your code!</p>
-<div class="section-title" style="margin-top:20px">Select Your Platform(s)</div>
-<div class="platform-grid">
-<div class="platform-card" onclick="togglePlatform(this,'YouTube')"><span>📹</span>YouTube</div>
-<div class="platform-card" onclick="togglePlatform(this,'Instagram')"><span>📷</span>Instagram</div>
-<div class="platform-card" onclick="togglePlatform(this,'TikTok')"><span>🎵</span>TikTok</div>
-<div class="platform-card" onclick="togglePlatform(this,'Facebook')"><span>👥</span>Facebook</div>
-<div class="platform-card" onclick="togglePlatform(this,'Twitter')"><span>🐦</span>Twitter</div>
-<div class="platform-card" onclick="togglePlatform(this,'Other')"><span>🌐</span>Other</div>
-</div>
-<div id="handleInputs"></div>
-<div class="cashback-info" id="cashbackInfo">
-<strong>HOW IT WORKS:</strong><br>
-• Get 5% cashback after your trip when you upload content<br>
-• Share your unique code with viewers<br>
-• Earn commission on every successful sale<br>
-• Cashback % varies by content type (short/reel vs long vlog)<br>
-• Limited slots available - create urgency!
-</div>
-<label style="margin-top:15px">
-<input type="checkbox" id="acceptCashback" onchange="updatePrice()"> I agree to create content and accept cashback terms
+<div class="section-title">Are You a Content Creator?</div>
+<p style="color:#888;margin-bottom:15px">Do you create content on YouTube, Instagram, or other platforms? Join our creator program!</p>
+<label style="display:flex;align-items:center;gap:10px;cursor:pointer">
+<input type="checkbox" id="isCreator" onchange="toggleCreatorSection()" style="width:auto;margin:0">
+<span>Yes, I'm a content creator and want to join the program</span>
 </label>
+<div id="creatorDetails" class="hidden" style="margin-top:20px;padding:20px;background:#0a0a0a;border:1px solid #4a9eff">
+<p style="color:#4a9eff;margin-bottom:15px">★ Benefits: Get your own coupon code, earn commission on referrals, and exclusive perks!</p>
+<label>Platform(s)</label>
+<input type="text" id="creatorPlatforms" placeholder="e.g., YouTube, Instagram, TikTok">
+<label>Channel/Profile Name</label>
+<input type="text" id="creatorHandle" placeholder="Your channel or profile name">
+<label>Subscriber/Follower Count (Approximate)</label>
+<input type="number" id="creatorFollowers" placeholder="e.g., 10000">
+<p style="color:#888;font-size:0.85em;margin-top:10px">
+Note: Admin will review and approve your application. You'll receive your creator code via phone/email.
+</p>
 </div>
 </div>
 
 <div class="section">
-<div class="section-title">PRICE SUMMARY</div>
-<div class="price-display">
-<span class="original" id="originalPrice">₹10,000</span>
-<span id="finalPrice">₹10,000</span>
+<div class="section-title">Price Summary</div>
+<div style="display:flex;justify-content:space-between;margin-bottom:10px">
+<span>Subtotal:</span>
+<span>₹<span id="displaySubtotal">0</span></span>
 </div>
-<div class="savings" id="savings"></div>
+<div style="display:flex;justify-content:space-between;margin-bottom:10px;color:#0f0" id="discountRow" class="hidden">
+<span>Discount (<span id="discountPercent">0</span>%):</span>
+<span>-₹<span id="displayDiscount">0</span></span>
+</div>
+<div style="display:flex;justify-content:space-between;font-size:1.5em;font-weight:700;border-top:1px solid #333;padding-top:10px">
+<span>Total:</span>
+<span>₹<span id="displayTotal">0</span></span>
+</div>
 </div>
 
-<button onclick="submitBooking()">COMPLETE BOOKING</button>
-<div class="tc-link"><a href="#" onclick="showTC()">Terms & Conditions</a></div>
+<button onclick="submitBooking()" id="bookBtn">COMPLETE BOOKING</button>
+</div>
+
+<div id="loadingOverlay" class="loading-overlay hidden">
+<div class="loading"></div>
 </div>
 
 <script>
-const WEB_APP_URL='https://script.google.com/macros/s/AKfycbz2FBtwYXswBTPtoF5zhpo1QWUtVn4VhZ_r7_duDf4oafOvxG6z5BAxJbfFvzq2MlSaTQ/exec';
-let basePrice=10000;
-let selectedPlatforms=[];
-let couponDiscount=0;
-let couponCode='';
-let cashbackActive=false;
+const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbwHJf1DA9D_itesCVkTtb0TeGFAorqnQ5hR1PdBDUVhXLVkk55IDW5hD2sLJPsPHsWkLQ/exec';
+const products = [
+  {id: 1, name: 'Product 1', price: 5000, desc: 'Premium service package with basic features'},
+  {id: 2, name: 'Product 2', price: 10000, desc: 'Advanced service package with extended features'},
+  {id: 3, name: 'Product 3', price: 15000, desc: 'Ultimate service package with all premium features'}
+];
 
-function toggleCreator(){
-const section=document.getElementById('creatorSection');
-section.classList.toggle('hidden');
-if(!document.getElementById('isCreator').checked){
-selectedPlatforms=[];
-document.querySelectorAll('.platform-card').forEach(c=>c.classList.remove('selected'));
-document.getElementById('handleInputs').innerHTML='';
-cashbackActive=false;
-}
-updatePrice();
+let cart = [];
+let appliedCoupon = null;
+
+function init() {
+  renderProducts();
+  updateCart();
 }
 
-function togglePlatform(el,platform){
-el.classList.toggle('selected');
-const idx=selectedPlatforms.indexOf(platform);
-if(idx>-1)selectedPlatforms.splice(idx,1);
-else selectedPlatforms.push(platform);
-renderHandleInputs();
+function renderProducts() {
+  const grid = document.getElementById('productsGrid');
+  grid.innerHTML = products.map(p => `
+    <div class="product-card">
+      <h3>${p.name}</h3>
+      <div class="product-price">₹${p.price}</div>
+      <p style="color:#888;font-size:0.85em;margin-bottom:15px">${p.desc}</p>
+      <button onclick="addToCart(${p.id})" class="secondary" style="width:100%">Add to Cart</button>
+    </div>
+  `).join('');
 }
 
-function renderHandleInputs(){
-const container=document.getElementById('handleInputs');
-container.innerHTML='';
-selectedPlatforms.forEach(p=>{
-const div=document.createElement('div');
-div.innerHTML=`<label>${p} Handle</label><div class="handle-input"><span>@</span><input type="text" id="handle_${p}" placeholder="username"></div>`;
-container.appendChild(div);
-});
+function addToCart(id) {
+  const product = products.find(p => p.id === id);
+  const existing = cart.find(c => c.id === id);
+  
+  if (existing) {
+    existing.quantity++;
+  } else {
+    cart.push({...product, quantity: 1});
+  }
+  
+  updateCart();
+  showToast('Added to cart', 'success');
 }
 
-function updatePrice(){
-cashbackActive=document.getElementById('isCreator').checked&&document.getElementById('acceptCashback').checked;
-let final=basePrice;
-if(couponDiscount>0&&!cashbackActive)final=basePrice*(1-couponDiscount/100);
-if(cashbackActive){
-const cashback=basePrice*0.05;
-document.getElementById('savings').textContent=`You'll receive ₹${cashback.toFixed(0)} cashback after content upload`;
-document.getElementById('cashbackInfo').classList.add('active');
-}else{
-document.getElementById('savings').textContent=couponDiscount>0?`You saved ₹${(basePrice*couponDiscount/100).toFixed(0)}!`:'';
-document.getElementById('cashbackInfo').classList.remove('active');
-}
-document.getElementById('finalPrice').textContent='₹'+final.toFixed(0);
+function removeFromCart(id) {
+  cart = cart.filter(c => c.id !== id);
+  updateCart();
 }
 
-function applyCoupon(){
-const code=document.getElementById('couponCode').value.trim();
-if(!code){alert('Enter a code');return}
-const msg=document.getElementById('couponMsg');
-fetch(`${WEB_APP_URL}?action=validateCoupon&code=${code}`)
-.then(r=>r.json())
-.then(d=>{
-msg.classList.remove('hidden');
-if(d.valid){
-couponCode=code;
-couponDiscount=d.discount||10;
-msg.className='discount-msg';
-msg.textContent=`✓ ${couponDiscount}% discount applied! (Cannot combine with creator cashback)`;
-if(document.getElementById('isCreator').checked){
-document.getElementById('isCreator').checked=false;
-toggleCreator();
-}
-}else{
-msg.className='discount-msg error-msg';
-msg.textContent='Invalid or expired code';
-couponDiscount=0;
-couponCode='';
-}
-updatePrice();
-});
+function updateQuantity(id, delta) {
+  const item = cart.find(c => c.id === id);
+  if (item) {
+    item.quantity += delta;
+    if (item.quantity <= 0) {
+      removeFromCart(id);
+    } else {
+      updateCart();
+    }
+  }
 }
 
-function submitBooking(){
-const name=document.getElementById('name').value.trim();
-const phone=document.getElementById('phone').value.trim();
-const numPeople=document.getElementById('numPeople').value;
-const serviceType=document.getElementById('serviceType').value;
-if(!name||!phone){alert('Fill required fields');return}
-const isCreator=document.getElementById('isCreator').checked;
-const handles={};
-if(isCreator){
-selectedPlatforms.forEach(p=>{
-const val=document.getElementById(`handle_${p}`).value.trim();
-if(val)handles[p]=val;
-});
-if(Object.keys(handles).length===0){alert('Add at least one social handle');return}
-if(!document.getElementById('acceptCashback').checked){alert('Accept cashback terms');return}
-}
-const data={
-action:'submitBooking',
-name,phone,numPeople,serviceType,
-isCreator,
-platforms:selectedPlatforms.join(','),
-handles:JSON.stringify(handles),
-couponUsed:couponCode,
-basePrice,
-finalPrice:parseFloat(document.getElementById('finalPrice').textContent.replace('₹','')),
-cashbackEligible:cashbackActive
-};
-fetch(WEB_APP_URL,{method:'POST',body:JSON.stringify(data)})
-.then(r=>r.json())
-.then(d=>{
-if(d.success){
-alert(`Booking confirmed!${d.creatorCode?'\n\nYour Creator Code: '+d.creatorCode+'\n\nShare this with your audience!':''}`);
-location.reload();
-}else alert('Error: '+d.message);
-});
+function updateCart() {
+  const cartSection = document.getElementById('cartSection');
+  const cartItems = document.getElementById('cartItems');
+  
+  if (cart.length === 0) {
+    cartSection.style.display = 'none';
+    updatePriceSummary();
+    return;
+  }
+  
+  cartSection.style.display = 'block';
+  cartItems.innerHTML = cart.map(item => `
+    <div style="display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid #222;padding:10px 0">
+      <div>
+        <strong>${item.name}</strong><br>
+        <span style="color:#888">₹${item.price} each</span>
+      </div>
+      <div style="display:flex;align-items:center;gap:10px">
+        <button onclick="updateQuantity(${item.id}, -1)" class="secondary" style="width:30px;padding:5px">-</button>
+        <span>${item.quantity}</span>
+        <button onclick="updateQuantity(${item.id}, 1)" class="secondary" style="width:30px;padding:5px">+</button>
+        <button onclick="removeFromCart(${item.id})" class="danger" style="width:auto;padding:5px 10px">Remove</button>
+      </div>
+    </div>
+  `).join('');
+  
+  updatePriceSummary();
 }
 
-function showTC(){
-alert('TERMS & CONDITIONS:\n\n• Cashback given after trip completion and content upload\n• Cashback % varies: 5% base, higher for quality vlogs\n• Creator must upload content within 30 days\n• Commission paid on confirmed sales only\n• Coupon discount cannot combine with creator cashback\n• Management reserves right to verify content quality\n• Limited slots per creator code');
-return false;
+function updatePriceSummary() {
+  const subtotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+  const discount = appliedCoupon ? (subtotal * appliedCoupon.discount / 100) : 0;
+  const total = subtotal - discount;
+  
+  document.getElementById('cartSubtotal').textContent = subtotal;
+  document.getElementById('displaySubtotal').textContent = subtotal;
+  document.getElementById('displayDiscount').textContent = discount.toFixed(0);
+  document.getElementById('discountPercent').textContent = appliedCoupon ? appliedCoupon.discount : 0;
+  document.getElementById('displayTotal').textContent = total.toFixed(0);
+  
+  if (appliedCoupon) {
+    document.getElementById('discountRow').classList.remove('hidden');
+  } else {
+    document.getElementById('discountRow').classList.add('hidden');
+  }
 }
+
+function applyCoupon() {
+  const code = document.getElementById('couponCode').value.trim().toUpperCase();
+  if (!code) {
+    showToast('Enter a coupon code', 'error');
+    return;
+  }
+  
+  showLoading();
+  fetch(`${WEB_APP_URL}?action=validateCoupon&code=${code}`)
+    .then(r => r.json())
+    .then(d => {
+      hideLoading();
+      const msg = document.getElementById('couponMsg');
+      if (d.valid) {
+        appliedCoupon = {code: code, discount: d.discount, creatorPhone: d.creatorPhone};
+        msg.innerHTML = `<div style="color:#0f0">✓ ${d.discount}% discount applied!</div>`;
+        updatePriceSummary();
+        showToast('Coupon applied', 'success');
+      } else {
+        msg.innerHTML = `<div style="color:#f44">Invalid or expired code</div>`;
+        appliedCoupon = null;
+        updatePriceSummary();
+        showToast('Invalid coupon', 'error');
+      }
+    })
+    .catch(err => {
+      hideLoading();
+      showToast('Error validating coupon', 'error');
+    });
+}
+
+function toggleCreatorSection() {
+  const checkbox = document.getElementById('isCreator');
+  const details = document.getElementById('creatorDetails');
+  if (checkbox.checked) {
+    details.classList.remove('hidden');
+  } else {
+    details.classList.add('hidden');
+  }
+}
+
+function submitBooking() {
+  const name = document.getElementById('name').value.trim();
+  const phone = document.getElementById('phone').value.trim();
+  const service = document.getElementById('serviceType').value;
+  
+  if (!name || !phone) {
+    showToast('Fill all required fields', 'error');
+    return;
+  }
+  
+  if (cart.length === 0) {
+    showToast('Add items to cart', 'error');
+    return;
+  }
+  
+  const isCreator = document.getElementById('isCreator').checked;
+  let creatorData = {};
+  
+  if (isCreator) {
+    const platforms = document.getElementById('creatorPlatforms').value.trim();
+    const handle = document.getElementById('creatorHandle').value.trim();
+    const followers = document.getElementById('creatorFollowers').value.trim();
+    
+    if (!platforms || !handle) {
+      showToast('Fill creator details (platform and handle required)', 'error');
+      return;
+    }
+    
+    creatorData = {
+      isCreator: true,
+      platforms: platforms,
+      handle: handle,
+      followers: followers || '0'
+    };
+  }
+  
+  const subtotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+  const discount = appliedCoupon ? appliedCoupon.discount : 0;
+  const final = subtotal - (subtotal * discount / 100);
+  
+  const data = {
+    action: 'submitBooking',
+    name, phone, service,
+    quantity: cart.reduce((sum, item) => sum + item.quantity, 0),
+    basePrice: subtotal,
+    discount: discount,
+    finalPrice: final,
+    couponCode: appliedCoupon ? appliedCoupon.code : '',
+    ...creatorData
+  };
+  
+  showLoading();
+  fetch(WEB_APP_URL, {
+    method: 'POST',
+    body: JSON.stringify(data)
+  })
+  .then(r => r.json())
+  .then(d => {
+    hideLoading();
+    if (d.success) {
+      let msg = 'Booking confirmed!';
+      if (isCreator) {
+        msg += ' Your creator application has been submitted for review.';
+      }
+      showToast(msg, 'success');
+      setTimeout(() => location.reload(), 2000);
+    } else {
+      showToast('Error: ' + (d.error || 'Unknown error'), 'error');
+    }
+  })
+  .catch(err => {
+    hideLoading();
+    showToast('Network error', 'error');
+  });
+}
+
+function showLoading() {
+  document.getElementById('loadingOverlay').classList.remove('hidden');
+  document.getElementById('bookBtn').disabled = true;
+}
+
+function hideLoading() {
+  document.getElementById('loadingOverlay').classList.add('hidden');
+  document.getElementById('bookBtn').disabled = false;
+}
+
+function showToast(msg, type = 'info') {
+  const toast = document.createElement('div');
+  toast.className = `toast ${type}`;
+  toast.textContent = msg;
+  document.body.appendChild(toast);
+  setTimeout(() => toast.remove(), 3000);
+}
+
+init();
 </script>
 </body>
 </html>
